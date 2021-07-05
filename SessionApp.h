@@ -7,10 +7,11 @@
 #include <ctime>
 
 // COLOR CONTAINER
-#define BACKGROUND (13,13,39)
-#define WINWIDTH 800
-#define WINHEIGHT 600
+#define BACKGROUNDC 13,13,39
+#define WINWIDTH 740
+#define WINHEIGHT 560
 #define ANTIALIASING 4
+
 
 
 class SessionApp
@@ -21,6 +22,10 @@ class SessionApp
 		sf::VideoMode videoMode;
 		sf::ContextSettings settings;
 		sf::Event event;
+
+		// UI Components
+		sf::Texture text;
+		sf::Sprite background;
 
 		// Boolean data components and Methods
 		
@@ -38,7 +43,7 @@ class SessionApp
 		const bool isRunning() const;
 
 		// Helper Functions
-		void eventUpdate();
+		void PollEvents();
 
 		// Modifiers (UPDATE)
 

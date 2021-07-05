@@ -11,6 +11,7 @@ void SessionApp::InitVariables()
 void SessionApp::InitWindow()
 {
 	window = new sf::RenderWindow(this->videoMode, "SESSION TRACKER");
+	this->window->setFramerateLimit(60);
 }
 
 SessionApp::SessionApp()
@@ -28,7 +29,7 @@ const bool SessionApp::isRunning() const
 	return this->window->isOpen();;
 }
 
-void SessionApp::eventUpdate()
+void SessionApp::PollEvents()
 {
 	while (this->window->pollEvent(this->event))
 	{
@@ -47,10 +48,11 @@ void SessionApp::eventUpdate()
 
 void SessionApp::Update()
 {
-
+	this->PollEvents();
 }
 
 void SessionApp::Render()
 {
-
+	this->window->clear(sf::Color::White);
+	this->window->display();
 }
