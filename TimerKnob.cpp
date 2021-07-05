@@ -81,7 +81,6 @@ int main()
 			{
 				mouseHeld = true;
 				leftClickDown = true;
-				std::cout << "Chuyo Chuyo" << std::endl;
 			}
 			else if (leftClickDown) 
 			{
