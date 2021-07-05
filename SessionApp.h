@@ -1,0 +1,52 @@
+#pragma once
+#ifndef SESSIONAPP_H
+#define SESSIONAPP_H
+#include "SFML/Graphics.hpp"
+#include <iostream>
+#include <vector>
+#include <ctime>
+
+// COLOR CONTAINER
+#define BACKGROUND (13,13,39)
+#define WINWIDTH 800
+#define WINHEIGHT 600
+#define ANTIALIASING 4
+
+
+class SessionApp
+{
+	private:
+		// Main data components
+		sf::RenderWindow* window;
+		sf::VideoMode videoMode;
+		sf::ContextSettings settings;
+		sf::Event event;
+
+		// Boolean data components and Methods
+		
+
+		// Initializers
+		void InitVariables();
+		void InitWindow();
+
+	public:
+		// Constructors & Destructors
+		SessionApp();
+		~SessionApp();
+
+		// Accessors
+		const bool isRunning() const;
+
+		// Helper Functions
+		void eventUpdate();
+
+		// Modifiers (UPDATE)
+
+
+		// Window Update & Render
+		void Update();
+		void Render();
+};
+
+#endif
+
