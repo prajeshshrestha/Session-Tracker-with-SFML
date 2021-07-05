@@ -1,0 +1,36 @@
+﻿  TimerKnob.cpp
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\TimerKnob.cpp(11,68): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\TimerKnob.cpp(11,44): warning C4244: 'argument': conversion from 'T' to 'T', possible loss of data
+          with
+          [
+              T=unsigned int
+          ]
+          and
+          [
+              T=float
+          ]
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\TimerKnob.cpp(89,23): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\TimerKnob.cpp(101,41): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\TimerKnob.cpp(109,41): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\TimerKnob.cpp(116,41): warning C4244: 'argument': conversion from 'double' to 'T', possible loss of data
+          with
+          [
+              T=float
+          ]
+  Session Tracker.vcxproj -> C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\x64\Debug\Session Tracker.exe
