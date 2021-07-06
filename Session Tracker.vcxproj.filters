@@ -18,15 +18,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SessionApp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="SessionApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="learnView.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
