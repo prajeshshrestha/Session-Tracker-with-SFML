@@ -8,8 +8,7 @@ void SessionApp::InitVariables()
 	this->rect.setPosition({ 0.f, 170.f });
 	this->rect.setSize({ 740.f, 30.f });
 	this->sessionView.reset(sf::FloatRect(0, 170.f, 740.f, 390.f));
-	this->sessionView.setViewport(sf::FloatRect(0, 0, 1.0f, 1.0f));
-	
+	this->sessionView.setViewport(sf::FloatRect(0, 0.3035, 1.0f, 1.0f));
 }
 
 void SessionApp::InitWindow()

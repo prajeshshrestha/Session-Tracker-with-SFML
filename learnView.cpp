@@ -43,17 +43,18 @@ int main()
 			}
 			if (event.type == sf::Event::MouseWheelMoved)
 			{
-				
-				if (event.mouseWheel.delta <= -1)
+				if (fillers.size() > 11)
 				{
-					std::cout << "Down detedted!" << std::endl;
-					view.move(0.f, 32.f);
-				}
-				else if (event.mouseWheel.delta >= 1)
-				{
-					std::cout << "Up detedted!" << std::endl;
-					view.move(0.f, -32.f);
-
+					if (event.mouseWheel.delta <= -1)
+					{
+						std::cout << "Down detedted!" << std::endl;
+						view.move(0.f, 32.f);
+					}
+					else if (event.mouseWheel.delta >= 1)
+					{
+						std::cout << "Up detedted!" << std::endl;
+						view.move(0.f, -32.f);
+					}
 				}
 			}
 		}

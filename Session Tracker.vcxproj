@@ -149,7 +149,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="learnView.cpp" />
+    <ClCompile Include="inputField.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inputField.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
