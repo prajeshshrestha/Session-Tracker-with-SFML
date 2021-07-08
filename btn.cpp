@@ -1,54 +1,108 @@
-#include "Button.h"
+#include "Btn.h"
 
-
-
-int main()
+Btn::Btn(std::string BtnText, sf::Vector2f btnPos, uint8_t charSize, sf::Font& font)
 {
-	sf::ContextSettings settings;
-	settings.antialiasingLevel = 4;
-	sf::RenderWindow window(sf::VideoMode(800, 600), "SFML ROCKS", sf::Style::Titlebar | sf::Style::Close, settings);
-	window.setFramerateLimit(60);
+	this->btnText = BtnText;
+	this->inputBtnPos = btnPos;
+	this->uiFont = font;
+	this->charSize = charSize;
+	LoadText();
+	SetBtnShape();
+	SetText();
+	SetBtnRect();
+}
 
-	sf::Font font;
-	if (!font.loadFromFile("Fonts/Roboto-Medium.ttf"))
-		return EXIT_FAILURE;
+void Btn::LoadText()
+{
+	text.setFont(this->uiFont);
+	text.setString(this->btnText);
+	text.setCharacterSize(charSize);
+	text.setFillColor(sf::Color::Black);
+}
 
-	Button btn("Click me", { 90.f, 30.f }, { 200.f, 200.f }, font);
+void Btn::SetBtnShape()
+{
+	textBounds = this->text.getGlobalBounds();
+	shape.setSize({ textBounds.width + this->text.getCharacterSize(), textBounds.height + this->text.getCharacterSize() + this->charSize / 2 });
+	shape.setOrigin({ shape.getSize().x / 2, shape.getSize().y / 2 });
+	shape.setPosition(inputBtnPos);
+	shapeBounds = this->shape.getGlobalBounds();
 
-	sf::CircleShape shape(40.f);
-	shape.setPosition({ window.getPosition().x / 2 - shape.getRadius(), window.getPosition().y / 2 - shape.getRadius() });
+	C1.setRadius(shapeBounds.height / 2);
+	C2.setRadius(shapeBounds.height / 2);
+	C1.setOrigin({ C1.getRadius(), C1.getRadius() });
+	C2.setOrigin({ C2.getRadius(), C2.getRadius() });
+	C1.setPosition({ shapeBounds.left, shapeBounds.top + shapeBounds.height / 2 });
+	C2.setPosition({ shapeBounds.left + shapeBounds.width, shapeBounds.top + shapeBounds.height / 2 });
+}
 
-	srand(static_cast<unsigned>(time(NULL)));
+void Btn::SetText()
+{
+	text.setOrigin({ textBounds.width / 2, textBounds.height / 2 });
+	text.setPosition({ shape.getPosition().x, shape.getPosition().y - text.getCharacterSize() / fixFactor });
+}
 
-	std::function<void()> shapeColorChange = [&]()
+void Btn::SetBtnRect()
+{
+	wholeBtnRect.width = C1.getRadius() * 2.f + shape.getSize().x;
+	wholeBtnRect.left = C1.getGlobalBounds().left;
+	wholeBtnRect.top = C1.getGlobalBounds().top;
+	wholeBtnRect.height = C1.getRadius() * 2.f;
+}
+
+void Btn::SetFillColor(sf::Color color)
+{
+	this->shape.setFillColor(color);
+	this->C1.setFillColor(color);
+	this->C2.setFillColor(color);
+}
+
+void Btn::BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<void()> func)
+{
+	mousePos = sf::Mouse::getPosition(window);
+	mousePosView = static_cast<sf::Vector2f>(mousePos);
+
+	if (this->wholeBtnRect.contains(this->mousePosView))
 	{
-		shape.setFillColor(sf::Color(rand() % 255, rand() % 255, rand() % 255));
-	};
-
-
-	while (window.isOpen())
-	{
-		sf::Event event;
-		while (window.pollEvent(event))
+		if (!mouseInside)
 		{
-			switch (event.type)
-			{
-			case sf::Event::Closed:
-				window.close();
-				break;
-			case sf::Event::KeyPressed:
-				if (event.key.code == sf::Keyboard::Escape)
-					window.close();
-				break;
-			default:
-				break;
-			}
-			btn.btnEvents(event, window, shapeColorChange);
+			this->btnScale = 1.02f;
+			mouseInside = true;
 		}
 
-		window.clear(sf::Color(13, 13, 39));
-		window.draw(shape);
-		btn.drawTo(window);
-		window.display();
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			if (!mouseHeld)
+			{
+				mouseHeld = true;
+				func();
+			}
+			else if (mouseHeld)
+			{
+				this->btnScale = 0.99f;
+			}
+		}
+		else
+		{
+			mouseHeld = false;
+			this->btnScale = 1.02f;
+		}
 	}
+	else
+	{
+		this->btnScale = 1.f;
+		mouseInside = false;
+	}
+
+	this->shape.setScale(btnScale, btnScale);
+	this->C1.setScale(btnScale, btnScale);
+	this->C2.setScale(btnScale, btnScale);
+}
+
+void Btn::DrawTo(sf::RenderWindow& window)
+{
+	window.draw(this->shape);
+	window.draw(this->C1);
+	window.draw(this->C2);
+	window.draw(this->text);
 }

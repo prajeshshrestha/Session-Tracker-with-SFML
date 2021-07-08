@@ -1,5 +1,6 @@
-#include "BtnHeader.h"
+//#include "Btn.h"
 #include "SFML/Graphics.hpp"
+
 
 int main()
 {
@@ -16,8 +17,15 @@ int main()
 	if (!font.loadFromFile("Font/Roboto-Medium.ttf"))
 		throw "Error in loading the 'Roboto-Medium' font";
 
+	sf::Text text;
+	text.setFont(font);
+	text.setCharacterSize(20);
+	text.setString("I don't have any idea");
+	text.setPosition({ 400.f,400.f });
+
 	// Testing the button 
-	Button btn("Santosh Pandey", winCenter, font);
+	/*Btn *btn;
+	btn = new Btn("Santosh Pandey", { winCenter.x, winCenter.y }, font);*/
 
 	sf::RectangleShape rect;
 	rect.setSize({ 300.f, 30.f });
@@ -44,12 +52,13 @@ int main()
 			}
 	
 		}
-		btn.BtnEvents(window, event, rectColorChange);
+		//btn.BtnEvents(window, event, rectColorChange);
 
 		
 		
 		window.clear(sf::Color(23, 137, 252));
-		btn.DrawTo(&window);
+		window.draw(text);
+		/*btn->DrawTo(window);*/
 		window.draw(rect);
 		window.display();
 	}

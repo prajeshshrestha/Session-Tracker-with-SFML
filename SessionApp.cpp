@@ -5,15 +5,16 @@ void SessionApp::InitVariables()
 	this->videoMode.width = WINWIDTH;
 	this->videoMode.height = WINHEIGHT;
 	this->settings.antialiasingLevel = ANTIALIASING;
-	this->rect.setPosition({ 0.f, 170.f });
+
+	this->rect.setPosition({ 0.f, 0.f });
 	this->rect.setSize({ 740.f, 30.f });
-	this->sessionView.reset(sf::FloatRect(0, 170.f, 740.f, 390.f));
+	this->sessionView.reset(sf::FloatRect(0, 0, 740.f, 560.f));
 	this->sessionView.setViewport(sf::FloatRect(0, 0.3035, 1.0f, 1.0f));
 }
 
 void SessionApp::InitWindow()
 {
-	this->window = new sf::RenderWindow(this->videoMode, "SESSION TRACKER");
+	this->window = new sf::RenderWindow(this->videoMode, "SESSION TRACKER", sf::Style::Titlebar | sf::Style::Close, this->settings);
 	this->window->setFramerateLimit(FPS);
 	this->winSize = this->window->getSize();
 	this->winSizeF = static_cast<sf::Vector2f>(this->winSize);
@@ -31,6 +32,7 @@ void SessionApp::InitUIFont()
 {
 	if (!this->fontKaushan.loadFromFile("Font/KaushanScript-Regular.ttf"))
 		throw "Error in loading the 'KaushanScript-Regular.ttf'";
+
 	if (!this->fontRoboto.loadFromFile("Font/Roboto-Medium.ttf"))
 		throw "Error in loading the 'Roboto-Medium.ttf'";
 	this->uiText.setFont(fontKaushan);
@@ -39,11 +41,12 @@ void SessionApp::InitUIFont()
 void SessionApp::InitUIComponents()
 {
 	this->InitUIFont();
-	addProjectBtn = Button("+ Add new session", { 190.f, 30.f }, { winSizeF.x / 2 - 95, 100.f }, this->fontRoboto);
-	addProjectBtn.setTextSize(18);
+	this->addSessionBtn = new Btn("+ Add new session", { winSizeF.x / 2, 110.f },static_cast<uint8_t>(16), this->fontRoboto);
+	this->addSessionBtn->SetFillColor(sf::Color(23, 137, 252));
+	this->addSessionBtn->text.setFillColor(sf::Color::White);
+
 	this->addRect = [&]()
 	{
-		
 		if (this->rects.size() >= 1)
 		{
 			sf::Vector2f lastRectPos = this->rects[rects.size() - 1].getPosition();
@@ -70,6 +73,7 @@ SessionApp::SessionApp()
 SessionApp::~SessionApp()
 {
 	delete this->window;
+	delete this->addSessionBtn;
 }
 
 const bool SessionApp::isRunning() const
@@ -91,8 +95,8 @@ void SessionApp::PollEvents()
 					this->window->close();
 				break;
 		}
-		this->addProjectBtn.btnEvents(this->event, *this->window, this->addRect);
 	}
+	this->addSessionBtn->BtnEvents(*this->window, this->event, this->addRect);
 }
 
 void SessionApp::LogoUITextUpdate()
@@ -123,12 +127,13 @@ void SessionApp::Update()
 
 void SessionApp::Render()
 {
-	this->window->clear(sf::Color::White);
+	this->window->clear(sf::Color(13,13,39));
 
 	
 	this->window->setView(this->window->getDefaultView());
 	this->window->draw(this->background);
-	this->addProjectBtn.drawTo(*this->window);
+	//this->addProjectBtn.drawTo(*this->window);
+	this->addSessionBtn->DrawTo(*this->window);
 
 	this->window->setView(this->sessionView);
 	for (auto& rect : rects)

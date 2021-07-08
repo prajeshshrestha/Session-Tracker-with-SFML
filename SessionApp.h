@@ -2,7 +2,7 @@
 #ifndef SESSIONAPP_H
 #define SESSIONAPP_H
 #include "SFML/Graphics.hpp"
-#include "Button.h"
+#include "Btn.h"
 #include <iostream>
 #include <vector>
 #include <ctime>
@@ -28,10 +28,15 @@ class SessionApp
 		// UI Components
 		sf::Texture texture;
 		sf::Sprite background;
-		Button addProjectBtn;
 		sf::RectangleShape rect;
-		std::vector<sf::RectangleShape> rects;
 		sf::View sessionView;
+
+		// Buttons and Inputfield;
+		//Button addProjectBtn;
+		Btn *addSessionBtn;
+
+		// Components container
+		std::vector<sf::RectangleShape> rects;
 
 		// UI Typogrphy
 		sf::Font fontKaushan;

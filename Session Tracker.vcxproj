@@ -149,10 +149,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="inputField.cpp" />
+    <ClCompile Include="Btn.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="SessionApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inputField.h" />
+    <ClInclude Include="Btn.h" />
+    <ClInclude Include="SessionApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

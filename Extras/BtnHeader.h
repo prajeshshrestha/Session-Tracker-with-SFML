@@ -6,6 +6,7 @@
 #include <ctime>
 #include <functional>
 
+
 class Button
 {
 	public:
@@ -26,6 +27,8 @@ class Button
 		bool mouseInside = false;
 		bool mouseHeld = false;
 		
+		Button() {}
+
 		Button(std::string BtnText, sf::Vector2f btnPos, sf::Font& font)
 		{
 			btnText = BtnText;
@@ -75,12 +78,14 @@ class Button
 			wholeBtnRect.height = C1.getRadius() * 2.f;
 		} 
 
-		void DrawTo(sf::RenderTarget *target)
+		void DrawTo(sf::RenderWindow &window)
 		{
-			target->draw(this->shape);
-			target->draw(this->C1);
-			target->draw(this->C2);
-			target->draw(this->text);
+			
+			window.draw(this->shape);
+			window.draw(this->C1);
+			window.draw(this->C2);
+			//window.draw(this->text);
+			
 		}
 
 		void BtnEvents(sf::RenderWindow& window, sf::Event &event, std::function<void()> func)

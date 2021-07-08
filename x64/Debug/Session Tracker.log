@@ -1,3 +1,1 @@
-﻿  inputField.cpp
-C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\inputField.h(38,1): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
-  Session Tracker.vcxproj -> C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\x64\Debug\Session Tracker.exe
+﻿  Session Tracker.vcxproj -> C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\x64\Debug\Session Tracker.exe
