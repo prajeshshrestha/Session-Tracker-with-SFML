@@ -151,7 +151,7 @@
   <ItemGroup>
     <ClCompile Include="Btn.cpp" />
     <ClCompile Include="InputField.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="RoundedRect.cpp" />
     <ClCompile Include="SessionApp.cpp" />
   </ItemGroup>
   <ItemGroup>

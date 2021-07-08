@@ -8,8 +8,13 @@ void SessionApp::InitVariables()
 
 	this->rect.setPosition({ 0.f, 0.f });
 	this->rect.setSize({ 740.f, 30.f });
+	this->rect.setFillColor(sf::Color(240, 240, 240));
+	this->testText.setPosition({ 0.f, 0.f });
+	this->testText.setFillColor(sf::Color::Black);
+	this->testText.setCharacterSize(16);
+
 	this->sessionView.reset(sf::FloatRect(0, 0, 740.f, 560.f));
-	this->sessionView.setViewport(sf::FloatRect(0, 0.3035, 1.0f, 1.0f));
+	this->sessionView.setViewport(sf::FloatRect(0.2, 0.3035, 1.0f, 1.0f));
 }
 
 void SessionApp::InitWindow()
@@ -36,6 +41,7 @@ void SessionApp::InitUIFont()
 	if (!this->fontRoboto.loadFromFile("Font/Roboto-Medium.ttf"))
 		throw "Error in loading the 'Roboto-Medium.ttf'";
 	this->uiText.setFont(fontKaushan);
+	this->testText.setFont(this->fontRoboto);
 }
 
 void SessionApp::InitUIComponents()
@@ -52,20 +58,26 @@ void SessionApp::InitUIComponents()
 	{
 		btnHide = true;
 		inputHide = false;
-		
-		//if (this->rects.size() >= 1)
-		//{
-		//	sf::Vector2f lastRectPos = this->rects[rects.size() - 1].getPosition();
-		//	this->rect.setPosition({ 0.f, lastRectPos.y + 32.f });
-		//	this->rect.setFillColor(sf::Color(rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1));
-		//	this->rects.push_back(sf::RectangleShape(this->rect));
-		//}
-		//else 
-		//{
-		//	this->rect.setFillColor(sf::Color(rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1));
-		//	this->rects.push_back(sf::RectangleShape(this->rect));
-		//}
 	};
+
+	this->addSessionTab = [&]()
+	{
+		this->testText.setString(this->inputTexts[this->inputTexts.size() - 1]);
+		if (this->rects.size() >= 1)
+		{
+			sf::Vector2f lastRectPos = this->rects[rects.size() - 1].getPosition();
+			this->rect.setPosition({ 0.f, lastRectPos.y + 32.f });
+			this->testText.setPosition(this->rect.getPosition());
+			this->rects.push_back(sf::RectangleShape(this->rect));
+			this->textVec.push_back(sf::Text(this->testText));
+		}
+		else 
+		{
+			this->rects.push_back(sf::RectangleShape(this->rect));
+			this->textVec.push_back(sf::Text(this->testText));
+		}
+	};
+
 }
 
 SessionApp::SessionApp()
@@ -101,9 +113,9 @@ void SessionApp::PollEvents()
 					this->window->close();
 				break;
 		}
-		this->inputSession->InputEvent(*this->window, this->event, this->inputHide, this->btnHide, inputTexts);
+		this->inputSession->InputEvent(*this->window, this->event, this->inputHide, this->btnHide, inputTexts, this->addSessionTab);
 	}
-	this->addSessionBtn->BtnEvents(*this->window, this->event, this->addRect);
+	this->addSessionBtn->BtnEvents(*this->window, this->event, this->addRect, this->btnHide);
 }
 
 void SessionApp::LogoUITextUpdate()
@@ -152,6 +164,10 @@ void SessionApp::Render()
 	for (auto& rect : rects)
 	{
 		this->window->draw(rect);
+	}
+	for (auto& text : textVec)
+	{
+		this->window->draw(text);
 	}
 	
 	this->window->display();

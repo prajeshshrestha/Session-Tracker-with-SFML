@@ -24,10 +24,10 @@
     <ClCompile Include="InputField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="SessionApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SessionApp.cpp">
+    <ClCompile Include="RoundedRect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

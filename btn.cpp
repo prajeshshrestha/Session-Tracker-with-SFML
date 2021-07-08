@@ -57,46 +57,49 @@ void Btn::SetFillColor(sf::Color color)
 	this->C2.setFillColor(color);
 }
 
-void Btn::BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<void()> func)
+void Btn::BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<void()> func, bool &btnHide)
 {
-	mousePos = sf::Mouse::getPosition(window);
-	mousePosView = static_cast<sf::Vector2f>(mousePos);
-
-	if (this->wholeBtnRect.contains(this->mousePosView))
+	if (!btnHide)
 	{
-		if (!mouseInside)
-		{
-			this->btnScale = 1.02f;
-			mouseInside = true;
-		}
+		mousePos = sf::Mouse::getPosition(window);
+		mousePosView = static_cast<sf::Vector2f>(mousePos);
 
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		if (this->wholeBtnRect.contains(this->mousePosView))
 		{
-			if (!mouseHeld)
+			if (!mouseInside)
 			{
-				mouseHeld = true;
-				func();
+				this->btnScale = 1.02f;
+				mouseInside = true;
 			}
-			else if (mouseHeld)
+
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				this->btnScale = 0.99f;
+				if (!mouseHeld)
+				{
+					mouseHeld = true;
+					func();
+				}
+				else if (mouseHeld)
+				{
+					this->btnScale = 0.99f;
+				}
+			}
+			else
+			{
+				mouseHeld = false;
+				this->btnScale = 1.02f;
 			}
 		}
 		else
 		{
-			mouseHeld = false;
-			this->btnScale = 1.02f;
+			this->btnScale = 1.f;
+			mouseInside = false;
 		}
-	}
-	else
-	{
-		this->btnScale = 1.f;
-		mouseInside = false;
-	}
 
-	this->shape.setScale(btnScale, btnScale);
-	this->C1.setScale(btnScale, btnScale);
-	this->C2.setScale(btnScale, btnScale);
+		this->shape.setScale(btnScale, btnScale);
+		this->C1.setScale(btnScale, btnScale);
+		this->C2.setScale(btnScale, btnScale);
+	}
 }
 
 void Btn::DrawTo(sf::RenderWindow& window)

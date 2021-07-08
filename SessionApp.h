@@ -38,12 +38,14 @@ class SessionApp
 
 		// Components container
 		std::vector<sf::RectangleShape> rects;
+		std::vector<sf::Text> textVec;
 		std::vector<std::string> inputTexts;
 
 		// UI Typogrphy
 		sf::Font fontKaushan;
 		sf::Font fontRoboto;
 		sf::Text uiText;
+		sf::Text testText;
 		std::vector<sf::Text> allUIText;
 
 		// Data Accessors
@@ -52,6 +54,7 @@ class SessionApp
 
 		// Boolean data components and Methods
 		std::function<void()> addRect;
+		std::function<void()> addSessionTab;
 		bool btnHide = false;
 		bool inputHide = true;
 

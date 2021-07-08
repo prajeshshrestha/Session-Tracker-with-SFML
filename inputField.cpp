@@ -48,110 +48,109 @@ void InputField::SetWholeRect()
 }
 
 void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event, 
-	bool &inputHide, bool &btnHide, std::vector<std::string> &inputTexts)
+	bool &inputHide, bool &btnHide, std::vector<std::string> &inputTexts, 
+	std::function<void()>func)
 {
-	mousePos = sf::Mouse::getPosition(window);
-	mousePosView = static_cast<sf::Vector2f>(mousePos);
+	
+		mousePos = sf::Mouse::getPosition(window);
+		mousePosView = static_cast<sf::Vector2f>(mousePos);
 
-	if (wholeInputRect.contains(mousePosView))
-	{
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		if (wholeInputRect.contains(mousePosView))
 		{
-			if (!mouseHeld)
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			{
-				mouseHeld = true;
-				isFocused = true;
-				shape.setFillColor(sf::Color(255, 255, 255, 255));
-				Cleft.setFillColor(sf::Color(255, 255, 255, 255));
-				Cright.setFillColor(sf::Color(255, 255, 255, 255));
-			}
-		}
-		else
-		{
-			mouseHeld = false;
-		}
-	}
-	else
-	{
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		{
-			if (!mouseHeld)
-			{
-				mouseHeld = true;
-				isFocused = false;
-			}
-		}
-		else
-		{
-			mouseHeld = false;
-		}
-	}
-
-	if (isFocused)
-	{
-		if (inputText.size() >= 1 && inputText[inputText.size() - 1] != '_')
-		{
-			inputText += '_';
-			SetText(inputText);
-		}
-		// first time focussed
-		if (inputText.size() == 0)
-		{
-			inputText += "_";
-			SetText(inputText);
-		}
-		else
-		{
-			if (event.type == sf::Event::TextEntered)
-			{
-				if (event.text.unicode < 128)
+				if (!mouseHeld)
 				{
-					if (inputText.size() == 1)
-					{
-						inputText.clear();
-					}
-
-					if (event.text.unicode == 8 && bufferString.size() >= 1)
-					{
-						bufferString.pop_back();
-					}
-					else if (text.getGlobalBounds().width < shape.getGlobalBounds().width && event.text.unicode != 8)
-					{
-						bufferString.push_back(static_cast<char>(event.text.unicode));
-					}
-					
-					inputText.clear();
-					inputText += bufferString + "_";
-					SetText(inputText);
+					mouseHeld = true;
+					isFocused = true;
+					shape.setFillColor(sf::Color(255, 255, 255, 255));
+					Cleft.setFillColor(sf::Color(255, 255, 255, 255));
+					Cright.setFillColor(sf::Color(255, 255, 255, 255));
 				}
 			}
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !inputHide)
-		{
-			inputHide = true;
-			btnHide = false;
-			this->savedString = bufferString;
-			inputTexts.push_back(this->savedString);
-			this->bufferString = "";
-			this->inputText = "";
-			this->SetText("");
-			for (auto text : inputTexts)
+			else
 			{
-				std::cout << text << "   ";
+				mouseHeld = false;
 			}
-			std::cout << std::endl;
-			
 		}
-	}
-	else
-	{
-		shape.setFillColor(sf::Color(230, 230, 230));
-		Cleft.setFillColor(sf::Color(230, 230, 230));
-		Cright.setFillColor(sf::Color(230, 230, 230));
-		if (inputText.size() >= 1 && inputText[inputText.size() - 1] == '_')
+		else
 		{
-			inputText.pop_back();
-			SetText(inputText);
+			if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+			{
+				if (!mouseHeld)
+				{
+					mouseHeld = true;
+					isFocused = false;
+				}
+			}
+			else
+			{
+				mouseHeld = false;
+			}
+		}
+	if(!inputHide)
+	{
+		if (isFocused)
+		{
+			if (inputText.size() >= 1 && inputText[inputText.size() - 1] != '_')
+			{
+				inputText += '_';
+				SetText(inputText);
+			}
+			// first time focussed
+			if (inputText.size() == 0)
+			{
+				inputText += "_";
+				SetText(inputText);
+			}
+			else
+			{
+				if (event.type == sf::Event::TextEntered)
+				{
+					if (event.text.unicode < 128)
+					{
+						if (inputText.size() == 1)
+						{
+							inputText.clear();
+						}
+
+						if (event.text.unicode == 8 && bufferString.size() >= 1)
+						{
+							bufferString.pop_back();
+						}
+						else if (text.getGlobalBounds().width < shape.getGlobalBounds().width && event.text.unicode != 8)
+						{
+							bufferString.push_back(static_cast<char>(event.text.unicode));
+						}
+
+						inputText.clear();
+						inputText += bufferString + "_";
+						SetText(inputText);
+					}
+				}
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !inputHide)
+			{
+				inputHide = true;
+				btnHide = false;
+				this->savedString = bufferString;
+				inputTexts.push_back(this->savedString);
+				this->bufferString = "";
+				this->inputText = "";
+				this->SetText("");
+				func();
+			}
+		}
+		else
+		{
+			shape.setFillColor(sf::Color(230, 230, 230));
+			Cleft.setFillColor(sf::Color(230, 230, 230));
+			Cright.setFillColor(sf::Color(230, 230, 230));
+			if (inputText.size() >= 1 && inputText[inputText.size() - 1] == '_')
+			{
+				inputText.pop_back();
+				SetText(inputText);
+			}
 		}
 	}
 }

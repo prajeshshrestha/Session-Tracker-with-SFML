@@ -19,7 +19,7 @@ class InputField
 		std::string bufferString;
 		std::string savedString;
 		size_t charSize = 16;
-		float fieldWidth = 200.f;
+		float fieldWidth = 300.f;
 		float padX = 14.f;
 		float padY = 5.f;
 		
@@ -48,7 +48,8 @@ class InputField
 		void CreateInputShape();
 		void SetWholeRect();
 		void InputEvent(sf::RenderWindow& window, sf::Event& event, bool& inputHide, 
-						bool& btnHide, std::vector<std::string>& inputTexts);
+						bool& btnHide, std::vector<std::string>& inputTexts,
+						std::function<void()> func);
 		void DrawTo(sf::RenderWindow& window);
 };
 
