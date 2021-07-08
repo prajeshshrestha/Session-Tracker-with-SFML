@@ -3,13 +3,14 @@
 #define SESSIONAPP_H
 #include "SFML/Graphics.hpp"
 #include "Btn.h"
+#include "InputField.h"
 #include <iostream>
 #include <vector>
 #include <ctime>
 #include <functional>
 
 // COLOR CONTAINER
-#define BACKGROUNDC 13,13,39
+#define BACKGROUNDC 255,255,255
 #define WINWIDTH 740
 #define WINHEIGHT 560
 #define ANTIALIASING 8
@@ -32,11 +33,12 @@ class SessionApp
 		sf::View sessionView;
 
 		// Buttons and Inputfield;
-		//Button addProjectBtn;
 		Btn *addSessionBtn;
+		InputField* inputSession;
 
 		// Components container
 		std::vector<sf::RectangleShape> rects;
+		std::vector<std::string> inputTexts;
 
 		// UI Typogrphy
 		sf::Font fontKaushan;
@@ -50,6 +52,8 @@ class SessionApp
 
 		// Boolean data components and Methods
 		std::function<void()> addRect;
+		bool btnHide = false;
+		bool inputHide = true;
 
 		// Initializers
 		void InitVariables();

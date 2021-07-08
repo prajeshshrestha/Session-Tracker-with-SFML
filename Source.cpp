@@ -1,5 +1,6 @@
-//#include "Btn.h"
+#include "Btn.h"
 #include "SFML/Graphics.hpp"
+#include "InputField.h"
 
 
 int main()
@@ -17,26 +18,23 @@ int main()
 	if (!font.loadFromFile("Font/Roboto-Medium.ttf"))
 		throw "Error in loading the 'Roboto-Medium' font";
 
-	sf::Text text;
-	text.setFont(font);
-	text.setCharacterSize(20);
-	text.setString("I don't have any idea");
-	text.setPosition({ 400.f,400.f });
 
 	// Testing the button 
-	/*Btn *btn;
-	btn = new Btn("Santosh Pandey", { winCenter.x, winCenter.y }, font);*/
+	Btn *btn;
+	btn = new Btn("Clear", { winCenter.x, winCenter.y + 50.f}, 14, font);
 
-	sf::RectangleShape rect;
-	rect.setSize({ 300.f, 30.f });
-	rect.setOrigin({ 150.f, 15.f });
-	rect.setPosition({ winCenter.x ,winCenter.y - 200.f });
+
+	// Testing the inputfield
+	InputField input(winCenter, font);
+
 
 	 
 	srand(static_cast<unsigned>(time(NULL)));
-	auto rectColorChange = [&]()
+	auto changeInput = [&]()
 	{
-		rect.setFillColor(sf::Color(rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1));
+		input.bufferString = "";
+		input.inputText = "";
+		input.SetText("");
 	};
 
 	while (window.isOpen())
@@ -50,16 +48,16 @@ int main()
 					window.close();
 					break;
 			}
-	
+			input.InputEvent(window, event);
 		}
-		//btn.BtnEvents(window, event, rectColorChange);
+		btn->BtnEvents(window, event, changeInput);
+		
 
 		
 		
 		window.clear(sf::Color(23, 137, 252));
-		window.draw(text);
-		/*btn->DrawTo(window);*/
-		window.draw(rect);
+		btn->DrawTo(window);
+		input.DrawTo(window);
 		window.display();
 	}
 }

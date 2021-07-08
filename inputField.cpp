@@ -18,12 +18,12 @@ void InputField::LoadText()
 void InputField::SetText(std::string inText)
 {
 	text.setString(inText);
-	text.setPosition({ wholeInputRect.left + 14.f, wholeInputRect.top + 5.f });
+	text.setPosition({ wholeInputRect.left + padX, wholeInputRect.top + padY });
 }
 
 void InputField::CreateInputShape()
 {
-	shape.setSize({ 500.f, float(charSize + 14) });
+	shape.setSize({ this->fieldWidth, float(charSize) + this->padX });
 	rectSize = shape.getSize();
 	shape.setOrigin({ rectSize.x / 2, rectSize.y / 2 });
 	shape.setPosition(inputFieldPos);
@@ -47,7 +47,8 @@ void InputField::SetWholeRect()
 	wholeInputRect.height = Cleft.getRadius() * 2.f;
 }
 
-void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event)
+void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event, 
+	bool &inputHide, bool &btnHide, std::vector<std::string> &inputTexts)
 {
 	mousePos = sf::Mouse::getPosition(window);
 	mousePosView = static_cast<sf::Vector2f>(mousePos);
@@ -58,7 +59,6 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event)
 		{
 			if (!mouseHeld)
 			{
-				std::cout << "Inside" << std::endl;
 				mouseHeld = true;
 				isFocused = true;
 				shape.setFillColor(sf::Color(255, 255, 255, 255));
@@ -77,7 +77,6 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event)
 		{
 			if (!mouseHeld)
 			{
-				std::cout << "Ouside" << std::endl;
 				mouseHeld = true;
 				isFocused = false;
 			}
@@ -100,13 +99,11 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event)
 		{
 			inputText += "_";
 			SetText(inputText);
-			std::cout << "Here" << std::endl;
 		}
 		else
 		{
 			if (event.type == sf::Event::TextEntered)
 			{
-
 				if (event.text.unicode < 128)
 				{
 					if (inputText.size() == 1)
@@ -118,16 +115,32 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event)
 					{
 						bufferString.pop_back();
 					}
-
 					else if (text.getGlobalBounds().width < shape.getGlobalBounds().width && event.text.unicode != 8)
 					{
 						bufferString.push_back(static_cast<char>(event.text.unicode));
 					}
+					
 					inputText.clear();
 					inputText += bufferString + "_";
 					SetText(inputText);
 				}
 			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter) && !inputHide)
+		{
+			inputHide = true;
+			btnHide = false;
+			this->savedString = bufferString;
+			inputTexts.push_back(this->savedString);
+			this->bufferString = "";
+			this->inputText = "";
+			this->SetText("");
+			for (auto text : inputTexts)
+			{
+				std::cout << text << "   ";
+			}
+			std::cout << std::endl;
+			
 		}
 	}
 	else
@@ -142,6 +155,7 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event)
 		}
 	}
 }
+
 
 void InputField::DrawTo(sf::RenderWindow& window)
 {

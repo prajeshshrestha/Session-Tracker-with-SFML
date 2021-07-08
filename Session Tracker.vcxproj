@@ -150,11 +150,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Btn.cpp" />
+    <ClCompile Include="InputField.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="SessionApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Btn.h" />
+    <ClInclude Include="InputField.h" />
     <ClInclude Include="SessionApp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

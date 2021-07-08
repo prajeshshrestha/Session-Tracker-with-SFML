@@ -45,20 +45,26 @@ void SessionApp::InitUIComponents()
 	this->addSessionBtn->SetFillColor(sf::Color(23, 137, 252));
 	this->addSessionBtn->text.setFillColor(sf::Color::White);
 
+	this->inputSession = new InputField({ this->winSizeF.x / 2, 110.f }, this->fontRoboto);
+
+
 	this->addRect = [&]()
 	{
-		if (this->rects.size() >= 1)
-		{
-			sf::Vector2f lastRectPos = this->rects[rects.size() - 1].getPosition();
-			this->rect.setPosition({ 0.f, lastRectPos.y + 32.f });
-			this->rect.setFillColor(sf::Color(rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1));
-			this->rects.push_back(sf::RectangleShape(this->rect));
-		}
-		else 
-		{
-			this->rect.setFillColor(sf::Color(rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1));
-			this->rects.push_back(sf::RectangleShape(this->rect));
-		}
+		btnHide = true;
+		inputHide = false;
+		
+		//if (this->rects.size() >= 1)
+		//{
+		//	sf::Vector2f lastRectPos = this->rects[rects.size() - 1].getPosition();
+		//	this->rect.setPosition({ 0.f, lastRectPos.y + 32.f });
+		//	this->rect.setFillColor(sf::Color(rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1));
+		//	this->rects.push_back(sf::RectangleShape(this->rect));
+		//}
+		//else 
+		//{
+		//	this->rect.setFillColor(sf::Color(rand() % 255 + 1, rand() % 255 + 1, rand() % 255 + 1));
+		//	this->rects.push_back(sf::RectangleShape(this->rect));
+		//}
 	};
 }
 
@@ -95,6 +101,7 @@ void SessionApp::PollEvents()
 					this->window->close();
 				break;
 		}
+		this->inputSession->InputEvent(*this->window, this->event, this->inputHide, this->btnHide, inputTexts);
 	}
 	this->addSessionBtn->BtnEvents(*this->window, this->event, this->addRect);
 }
@@ -127,13 +134,19 @@ void SessionApp::Update()
 
 void SessionApp::Render()
 {
-	this->window->clear(sf::Color(13,13,39));
+	this->window->clear(sf::Color(BACKGROUNDC));
 
 	
 	this->window->setView(this->window->getDefaultView());
 	this->window->draw(this->background);
-	//this->addProjectBtn.drawTo(*this->window);
-	this->addSessionBtn->DrawTo(*this->window);
+	if (!btnHide)
+	{
+		this->addSessionBtn->DrawTo(*this->window);
+	}
+	if (!inputHide)
+	{
+		this->inputSession->DrawTo(*this->window);
+	}
 
 	this->window->setView(this->sessionView);
 	for (auto& rect : rects)

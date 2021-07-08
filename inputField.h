@@ -1,6 +1,5 @@
 #pragma once
-#ifndef INPUTFIELD.H
-#define INPUTFIELD.H
+
 #include "SFML/Graphics.hpp"
 #include <iostream>
 #include <functional>
@@ -18,7 +17,11 @@ class InputField
 		// Supporting data members
 		std::string inputText;
 		std::string bufferString;
+		std::string savedString;
 		size_t charSize = 16;
+		float fieldWidth = 200.f;
+		float padX = 14.f;
+		float padY = 5.f;
 		
 		// Boolean data members
 		bool isFocused = false;
@@ -33,7 +36,6 @@ class InputField
 		sf::FloatRect wholeInputRect;
 		sf::FloatRect rectBounds;
 
-
 		// Constructors and destructors
 		InputField() {} // default 
 
@@ -45,9 +47,9 @@ class InputField
 		void SetText(std::string inText);
 		void CreateInputShape();
 		void SetWholeRect();
-		void InputEvent(sf::RenderWindow& window, sf::Event& event);
+		void InputEvent(sf::RenderWindow& window, sf::Event& event, bool& inputHide, 
+						bool& btnHide, std::vector<std::string>& inputTexts);
 		void DrawTo(sf::RenderWindow& window);
 };
 
 
-#endif
