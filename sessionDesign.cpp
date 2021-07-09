@@ -42,14 +42,29 @@ int main()
 	if (!robotoFont.loadFromFile("Font/Roboto-Medium.ttf"))
 		throw "Error in loading the 'Roboto-Medium.ttf'";
 
-	Btn* startBtn = new Btn("Start Session", { winCenter.x, bgImage.getGlobalBounds().height }, 16, robotoFont);
-	startBtn->SetFillColor(sf::Color(24, 171, 14));
-	startBtn->text.setFillColor(sf::Color::White);
+	sf::Color startColor(24, 171, 14);
+	sf::Color stopColor(247, 12, 55);
 
-	//auto testFunc = [&]()
-	//{
-	//	std::cout << "Clicked me fucking times!" << std::endl;
-	//};
+	Btn* startBtn = new Btn("Start Session", { winCenter.x, bgImage.getGlobalBounds().height }, 16, robotoFont);
+	startBtn->SetFillColor(startColor);
+	startBtn->text.setFillColor(sf::Color::White);
+	bool btnColorToggle = false;
+
+	auto testFunc = [&]()
+	{
+		if (!btnColorToggle)
+		{
+			startBtn->SetFillColor(stopColor);
+			startBtn->text.setString("Stop Session");
+		}
+		else
+		{
+			startBtn->SetFillColor(startColor);
+			startBtn->text.setString("Start Session");
+		}
+		btnColorToggle = !btnColorToggle;
+		
+	};
 
 	bool smthng = false;
 
@@ -62,7 +77,7 @@ int main()
 				window.close();
 			}
 		}
-		//startBtn->BtnEvents(window, event, testFunc, smthng);
+		startBtn->BtnEvents(window, event, testFunc, smthng);
 
 		window.clear(sf::Color::White);
 
