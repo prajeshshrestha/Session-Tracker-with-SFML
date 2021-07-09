@@ -18,27 +18,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Btn.cpp">
+    <ClCompile Include="sessionDesign.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InputField.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SessionApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RoundedRect.cpp">
+    <ClCompile Include="btn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Btn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputField.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SessionApp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

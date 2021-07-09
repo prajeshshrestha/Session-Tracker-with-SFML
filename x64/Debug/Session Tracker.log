@@ -1,2 +1,2 @@
-﻿  RoundedRect.cpp
-  Session Tracker.vcxproj -> C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\x64\Debug\Session Tracker.exe
+﻿  sessionDesign.cpp
+LINK : fatal error LNK1168: cannot open C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\x64\Debug\Session Tracker.exe for writing
