@@ -1,6 +1,82 @@
 #include "SFML/Graphics.hpp"
 #include <stdc++.h>
 #include "Btn.h"
+#include <ctime>
+#include <chrono>
+#include <time.h>
+
+class Record
+{
+	public:
+		sf::RectangleShape rect;
+		sf::CircleShape Cleft, Cright;
+		sf::Font font;
+		sf::Text timeT;
+		sf::Text durationT;
+		std::vector<std::string> recordData;
+		sf::Vector2f rectPos;
+		sf::FloatRect rectBounds;
+		sf::FloatRect timeTBounds;
+		sf::FloatRect durationTBounds;
+		
+		Record(sf::Font& f)
+		{
+			this->font = f;
+			this->timeT.setFont(f);
+			this->timeT.setCharacterSize(16);
+			this->durationT.setCharacterSize(16);
+			this->durationT.setFont(f);
+
+
+			this->rect.setSize({700.f, 30.f});
+			this->rect.setOrigin({ 350, 15.f });
+			this->rect.setFillColor(sf::Color(200,200,200));
+
+			this->Cleft.setRadius(15.f);
+			this->Cright.setRadius(15.f);
+			this->Cleft.setOrigin({ 15.f, 15.f });
+			this->Cright.setOrigin({ 15.f, 15.f });
+			this->Cleft.setFillColor(sf::Color(200,200,200));
+			this->Cright.setFillColor(sf::Color(200,200,200));
+		}
+
+		void SetText(std::vector<std::string> data)
+		{
+			this->recordData = data;
+			this->timeT.setString(this->recordData[0]);
+			this->durationT.setString(this->recordData[1]);
+			this->timeT.setFillColor(sf::Color::Black);
+			this->durationT.setFillColor(sf::Color::Black);
+
+			this->timeT.setOrigin({ this->timeT.getGlobalBounds().width / 2, this->timeT.getGlobalBounds().height / 2 });
+			this->durationT.setOrigin({ this->durationT.getGlobalBounds().width / 2, this->durationT.getGlobalBounds().height / 2 });
+
+			this->timeT.setPosition({ this->rectPos.x - timeT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
+			this->durationT.setPosition({ 700.f - durationT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
+			
+		}
+
+		void SetRectPosition(sf::Vector2f pos)
+		{
+			this->rect.setPosition(pos);
+			this->rectBounds = this->rect.getGlobalBounds();
+			this->rectPos = this->rect.getPosition();
+
+			this->Cleft.setPosition({rectBounds.left, rectBounds.top + rectBounds.height/2});
+			this->Cright.setPosition({ rectBounds.left + rectBounds.width, rectBounds.top + rectBounds.height / 2 });
+
+		}
+		
+		void DrawTo(sf::RenderWindow& window)
+		{
+			window.draw(this->rect);
+			window.draw(this->Cleft);
+			window.draw(this->Cright);
+			window.draw(this->timeT);
+			window.draw(this->durationT);
+		}
+};
+
 
 int main()
 {
@@ -31,14 +107,15 @@ int main()
 	sf::Font font;
 	if (!font.loadFromFile("Font/KaushanScript-Regular.ttf"))
 		throw "Error in loading 'Roboto-Medium.ttf";
-	sf::Text uiText("Session Name", font, 30);
+	sf::Text uiText("Engineering", font, 30);
 
-	uiText.setPosition({ winCenter.x - uiText.getGlobalBounds().width / 2, 50.f });
+	// The SESSION NAME
+	uiText.setPosition({ winCenter.x - uiText.getGlobalBounds().width / 2, 35.f });
 	uiText.setFillColor(sf::Color::White);
 
 	// Design Circle 
-	sf::CircleShape circle(8.f);
-	circle.setOrigin({ 8.f, 8.f });
+	sf::CircleShape circle(6.f);
+	circle.setOrigin({ 6.f, 6.f });
 	circle.setFillColor(sf::Color(8, 218, 145));
 	circle.setPosition({ uiText.getGlobalBounds().left - circle.getRadius() * 2, uiText.getGlobalBounds().top + uiText.getGlobalBounds().height / 2 });
 
@@ -50,6 +127,7 @@ int main()
 	sf::Color startColor(24, 171, 14);
 	sf::Color stopColor(247, 12, 55);
 
+	// Start session and Stop session interactive button
 	Btn* startBtn = new Btn("Start Session", { winCenter.x, bgImage.getGlobalBounds().height }, 16, robotoFont);
 	startBtn->SetFillColor(startColor);
 	startBtn->text.setFillColor(sf::Color::White);
@@ -58,15 +136,49 @@ int main()
 	// all about the timer
 	sf::Clock clock;
 	float t1;
-	float t2;
+	sf::Int32 t2;
 	int seconds = 0;
 	bool timerOn = false; // timer thingy
 
-	sf::Text time;
+
+	sf::Text time, trackerText("Tracking", robotoFont, 20), designateTime("HRS        MIN        SEC", robotoFont, 10);
+
+	// Time display
 	time.setFont(robotoFont);
-	time.setFillColor(sf::Color::Black);
-	time.setPosition({ winCenter.x, winCenter.y });
-	std::string timeToStr;
+	time.setFillColor(sf::Color::White);
+	time.setPosition({ winSizeF.x - 150.f, 120.f });
+	time.setCharacterSize(24);
+	std::string timeToStr; // time parsed string
+
+	// HRS MIN SEC below the timer
+	designateTime.setFillColor(sf::Color::White);
+	designateTime.setPosition({time.getGlobalBounds().left+8.f, 150.f});
+	
+	// 'Tracking' TEXT display
+	trackerText.setPosition({ winCenter.x - trackerText.getGlobalBounds().width / 2, 110.f });
+	sf::CircleShape trackingShape(5.f);
+	trackingShape.setOrigin({ 5.f, 5.f });
+	trackingShape.setPosition({trackerText.getGlobalBounds().left+trackerText.getGlobalBounds().width+trackingShape.getRadius()*2, 
+								trackerText.getGlobalBounds().top});
+	trackingShape.setFillColor(stopColor);
+
+	bool showTimer = false;
+
+	// Records showing 
+	std::vector<std::string> data = { "Time interval:   8:19am - 9:20am", "Duration:   01:00:40" };
+	Record record(robotoFont);
+	std::vector<Record> recordsTable;
+	record.SetRectPosition({ winCenter.x, 220.f });
+	record.SetText(data);
+	recordsTable.push_back(record);
+	for (int i = 0; i < 5; i++)
+	{
+		sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
+		record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 32.f });
+		record.SetText(data);
+		recordsTable.push_back(Record(record));
+	}
+	
 
 
 	auto testFunc = [&]()
@@ -80,6 +192,16 @@ int main()
 			bgStopImage.setPosition({0.f, 0.f});
 			bgImage.setPosition({ 0.f, -200.f });
 			startBtn->SetBtnPosition({ winCenter.x, bgStopImage.getGlobalBounds().height });
+			showTimer = true;
+
+			// Working with the system time and all that thing
+			std::time_t const t = std::time(NULL);
+			std::tm tm = *std::localtime(&t);
+			std::cout << std::put_time(&tm, "%A %T") << std::endl; // for displaying the time
+
+			char* dt = ctime(&t);
+			std::cout << dt << std::endl;
+
 		}
 		else
 		{
@@ -89,15 +211,12 @@ int main()
 			bgImage.setPosition({ 0.f, 0.f });
 			bgStopImage.setPosition({ 0.f, -200.f });
 			startBtn->SetBtnPosition({ winCenter.x, bgImage.getGlobalBounds().height });
-	
+			showTimer = false;
 		}
 		btnColorToggle = !btnColorToggle;
 		
 	};
 
-	bool smthng = false;
-
-	
 
 	while (window.isOpen())
 	{
@@ -108,7 +227,7 @@ int main()
 				window.close();
 			}
 		}
-		startBtn->BtnEvents(window, event, testFunc, smthng);
+		startBtn->BtnEvents(window, event, testFunc);
 
 		if (timerOn)
 		{
@@ -118,24 +237,31 @@ int main()
 			{
 				seconds += 1;
 				clock.restart();
-				std::cout << seconds / 3600 << ":" << (seconds / 60) % 60 << ":" << seconds % 60;
-				
 			}
 			timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
 				+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(int(t2 / 10));
-			std::cout << int(t2 / 10) << std::endl;
 			time.setString(timeToStr);
 		}
-		
 
 		window.clear(sf::Color::White);
 
 		window.draw(bgImage);
 		window.draw(bgStopImage);
 		window.draw(uiText);
+		if (showTimer)
+		{
+			window.draw(trackerText);
+			window.draw(trackingShape);
+			window.draw(time);
+			window.draw(designateTime);
+		}
 		window.draw(circle);
 		startBtn->DrawTo(window);
-		window.draw(time);
+
+		for (auto& record : recordsTable)
+		{
+			record.DrawTo(window);
+		}
 		window.display();
 	}
 }

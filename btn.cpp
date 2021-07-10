@@ -117,6 +117,50 @@ void Btn::BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<vo
 	}
 }
 
+void Btn::BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<void()> func)
+{
+	
+	mousePos = sf::Mouse::getPosition(window);
+	mousePosView = static_cast<sf::Vector2f>(mousePos);
+
+	if (this->wholeBtnRect.contains(this->mousePosView))
+	{
+		if (!mouseInside)
+		{
+			this->btnScale = 1.02f;
+			mouseInside = true;
+		}
+
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			if (!mouseHeld)
+			{
+				mouseHeld = true;
+				func();
+			}
+			else if (mouseHeld)
+			{
+				this->btnScale = 0.99f;
+			}
+		}
+		else
+		{
+			mouseHeld = false;
+			this->btnScale = 1.02f;
+		}
+	}
+	else
+	{
+		this->btnScale = 1.f;
+		mouseInside = false;
+	}
+
+	this->shape.setScale(btnScale, btnScale);
+	this->C1.setScale(btnScale, btnScale);
+	this->C2.setScale(btnScale, btnScale);
+	
+}
+
 void Btn::DrawTo(sf::RenderWindow& window)
 {
 	window.draw(this->shape);

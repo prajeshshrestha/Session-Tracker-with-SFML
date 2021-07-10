@@ -48,8 +48,8 @@ class Btn
 		void SetBtnRect();
 		void SetFillColor(sf::Color color);
 		void BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<void()> func, bool &btnHide);
+		void BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<void()> func);
 		void DrawTo(sf::RenderWindow &window);
 };
 
 #endif
-
