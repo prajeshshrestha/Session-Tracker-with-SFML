@@ -36,6 +36,21 @@ void Btn::SetBtnShape()
 	C2.setPosition({ shapeBounds.left + shapeBounds.width, shapeBounds.top + shapeBounds.height / 2 });
 }
 
+void Btn::SetBtnPosition(sf::Vector2f pos)
+{
+	shape.setPosition(pos);
+	shapeBounds = this->shape.getGlobalBounds();
+
+	C1.setRadius(shapeBounds.height / 2);
+	C2.setRadius(shapeBounds.height / 2);
+	C1.setOrigin({ C1.getRadius(), C1.getRadius() });
+	C2.setOrigin({ C2.getRadius(), C2.getRadius() });
+	C1.setPosition({ shapeBounds.left, shapeBounds.top + shapeBounds.height / 2 });
+	C2.setPosition({ shapeBounds.left + shapeBounds.width, shapeBounds.top + shapeBounds.height / 2 });
+	SetText();
+	SetBtnRect();
+}
+
 void Btn::SetText()
 {
 	text.setOrigin({ textBounds.width / 2, textBounds.height / 2 });

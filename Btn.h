@@ -43,6 +43,7 @@ class Btn
 
 		void LoadText();
 		void SetBtnShape();
+		void SetBtnPosition(sf::Vector2f pos);
 		void SetText();
 		void SetBtnRect();
 		void SetFillColor(sf::Color color);

@@ -15,12 +15,17 @@ int main()
 	sf::Vector2f winCenter({ winSizeF.x / 2, winSizeF.y / 2 });
 
 	//Background thingy
-	sf::Texture bgImageTex;
+	sf::Texture bgImageTex, bgStopTex;
 	if (!bgImageTex.loadFromFile("Texture/bgImageText.png"))
 		throw "Error in loading the 'bgImageText'";
-	sf::Sprite bgImage;
+
+	if (!bgStopTex.loadFromFile("Texture/stopTimer.png"))
+		throw "Error in loading the 'stopTimer.png'";
+	sf::Sprite bgImage, bgStopImage;
 	bgImage.setTexture(bgImageTex);
 	bgImage.setPosition({ 0.f, 0.f });
+	bgStopImage.setTexture(bgStopTex);
+	bgStopImage.setPosition({ 0.f, -200.f });
 
 	//UI font 
 	sf::Font font;
@@ -50,23 +55,49 @@ int main()
 	startBtn->text.setFillColor(sf::Color::White);
 	bool btnColorToggle = false;
 
+	// all about the timer
+	sf::Clock clock;
+	float t1;
+	float t2;
+	int seconds = 0;
+	bool timerOn = false; // timer thingy
+
+	sf::Text time;
+	time.setFont(robotoFont);
+	time.setFillColor(sf::Color::Black);
+	time.setPosition({ winCenter.x, winCenter.y });
+	std::string timeToStr;
+
+
 	auto testFunc = [&]()
 	{
 		if (!btnColorToggle)
 		{
 			startBtn->SetFillColor(stopColor);
 			startBtn->text.setString("Stop Session");
+			clock.restart();
+			timerOn = true;
+			bgStopImage.setPosition({0.f, 0.f});
+			bgImage.setPosition({ 0.f, -200.f });
+			startBtn->SetBtnPosition({ winCenter.x, bgStopImage.getGlobalBounds().height });
 		}
 		else
 		{
 			startBtn->SetFillColor(startColor);
 			startBtn->text.setString("Start Session");
+			timerOn = false;
+			bgImage.setPosition({ 0.f, 0.f });
+			bgStopImage.setPosition({ 0.f, -200.f });
+			startBtn->SetBtnPosition({ winCenter.x, bgImage.getGlobalBounds().height });
+	
 		}
 		btnColorToggle = !btnColorToggle;
 		
 	};
 
 	bool smthng = false;
+
+	
 
 	while (window.isOpen())
 	{
@@ -79,12 +110,32 @@ int main()
 		}
 		startBtn->BtnEvents(window, event, testFunc, smthng);
 
+		if (timerOn)
+		{
+			t1 = clock.getElapsedTime().asSeconds();
+			t2 = clock.getElapsedTime().asMilliseconds();
+			if (t1 > 1.f)
+			{
+				seconds += 1;
+				clock.restart();
+				std::cout << seconds / 3600 << ":" << (seconds / 60) % 60 << ":" << seconds % 60;
+				
+			}
+			timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
+				+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(int(t2 / 10));
+			std::cout << int(t2 / 10) << std::endl;
+			time.setString(timeToStr);
+		}
+		
+
 		window.clear(sf::Color::White);
 
 		window.draw(bgImage);
+		window.draw(bgStopImage);
 		window.draw(uiText);
 		window.draw(circle);
 		startBtn->DrawTo(window);
+		window.draw(time);
 		window.display();
 	}
 }
