@@ -13,11 +13,13 @@ class Record
 		sf::Font font;
 		sf::Text timeT;
 		sf::Text durationT;
+		sf::Text dayT;
 		std::vector<std::string> recordData;
 		sf::Vector2f rectPos;
 		sf::FloatRect rectBounds;
 		sf::FloatRect timeTBounds;
 		sf::FloatRect durationTBounds;
+
 		
 		Record(sf::Font& f)
 		{
@@ -26,18 +28,16 @@ class Record
 			this->timeT.setCharacterSize(16);
 			this->durationT.setCharacterSize(16);
 			this->durationT.setFont(f);
-
+			this->dayT.setFont(f);
+			this->dayT.setCharacterSize(16);
 
 			this->rect.setSize({700.f, 30.f});
 			this->rect.setOrigin({ 350, 15.f });
-			this->rect.setFillColor(sf::Color(200,200,200));
 
 			this->Cleft.setRadius(15.f);
 			this->Cright.setRadius(15.f);
 			this->Cleft.setOrigin({ 15.f, 15.f });
 			this->Cright.setOrigin({ 15.f, 15.f });
-			this->Cleft.setFillColor(sf::Color(200,200,200));
-			this->Cright.setFillColor(sf::Color(200,200,200));
 		}
 
 		void SetText(std::vector<std::string> data)
@@ -48,6 +48,10 @@ class Record
 			this->timeT.setFillColor(sf::Color::Black);
 			this->durationT.setFillColor(sf::Color::Black);
 
+			this->rect.setFillColor(sf::Color(200, 200, 200));
+			this->Cleft.setFillColor(sf::Color(200, 200, 200));
+			this->Cright.setFillColor(sf::Color(200, 200, 200));
+
 			this->timeT.setOrigin({ this->timeT.getGlobalBounds().width / 2, this->timeT.getGlobalBounds().height / 2 });
 			this->durationT.setOrigin({ this->durationT.getGlobalBounds().width / 2, this->durationT.getGlobalBounds().height / 2 });
 
@@ -56,12 +60,27 @@ class Record
 			
 		}
 
+		// Overloaded
+		void SetText(std::string data)
+		{
+			this->dayT.setString(data);
+			this->dayT.setFillColor(sf::Color::White);
+			std::cout << "What happened" << std::endl;
+			this->rect.setFillColor(sf::Color::Black);
+			this->Cleft.setFillColor(sf::Color::Black);
+			this->Cright.setFillColor(sf::Color::Black);
+
+			this->dayT.setOrigin({ this->dayT.getGlobalBounds().width / 2, this->dayT.getGlobalBounds().height / 2 });
+			this->dayT.setPosition({ 50.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 4 });
+		}
+		
+
 		void SetRectPosition(sf::Vector2f pos)
 		{
 			this->rect.setPosition(pos);
 			this->rectBounds = this->rect.getGlobalBounds();
 			this->rectPos = this->rect.getPosition();
-
+	
 			this->Cleft.setPosition({rectBounds.left, rectBounds.top + rectBounds.height/2});
 			this->Cright.setPosition({ rectBounds.left + rectBounds.width, rectBounds.top + rectBounds.height / 2 });
 
@@ -74,6 +93,7 @@ class Record
 			window.draw(this->Cright);
 			window.draw(this->timeT);
 			window.draw(this->durationT);
+			window.draw(this->dayT);
 		}
 };
 
@@ -169,12 +189,19 @@ int main()
 	Record record(robotoFont);
 	std::vector<Record> recordsTable;
 	record.SetRectPosition({ winCenter.x, 220.f });
-	record.SetText(data);
-	recordsTable.push_back(record);
+
+	Record anoRecord(robotoFont);
+	std::string strData = "Today";
+	
+	anoRecord.SetRectPosition({ winCenter.x, 220.f });
+	anoRecord.SetText(strData);
+	recordsTable.push_back(anoRecord);
+
+
 	for (int i = 0; i < 5; i++)
 	{
 		sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
-		record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 32.f });
+		record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
 		record.SetText(data);
 		recordsTable.push_back(Record(record));
 	}
