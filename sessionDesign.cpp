@@ -53,11 +53,17 @@ class Record
 			this->Cleft.setFillColor(sf::Color(200, 200, 200));
 			this->Cright.setFillColor(sf::Color(200, 200, 200));
 
-			this->timeT.setOrigin({ this->timeT.getGlobalBounds().width / 2, this->timeT.getGlobalBounds().height / 2 });
-			this->durationT.setOrigin({ this->durationT.getGlobalBounds().width / 2, this->durationT.getGlobalBounds().height / 2 });
+			/*this->timeT.setOrigin({ this->timeT.getGlobalBounds().width / 2, this->timeT.getGlobalBounds().height / 2 });
+			this->durationT.setOrigin({ this->durationT.getGlobalBounds().width / 2, this->durationT.getGlobalBounds().height / 2 });*/
 
-			this->timeT.setPosition({ this->rectPos.x - timeT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
-			this->durationT.setPosition({ 700.f - durationT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
+			this->timeT.setOrigin({ 0.f, this->timeT.getGlobalBounds().height / 2 });
+			this->durationT.setOrigin({ 0.f, this->durationT.getGlobalBounds().height / 2 });
+
+			/*this->timeT.setPosition({ this->rectPos.x - this->timeT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
+			this->durationT.setPosition({ 700.f - durationT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });*/
+
+			this->timeT.setPosition({ 30.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
+			this->durationT.setPosition({ 650.f - durationT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
 			
 		}
 
@@ -71,7 +77,7 @@ class Record
 			this->Cright.setFillColor(sf::Color::Black);
 
 			this->dayT.setOrigin({ this->dayT.getGlobalBounds().width / 2, this->dayT.getGlobalBounds().height / 2 });
-			this->dayT.setPosition({ 50.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 4 });
+			this->dayT.setPosition({ 50.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 - 3.f });
 		}
 		
 
@@ -156,8 +162,9 @@ int main()
 	// all about the timer
 	sf::Clock clock;
 	float t1;
-	sf::Int32 t2;
+	sf::Int32 t2 = 0;
 	int seconds = 0;
+	int miliSec = 0;
 	bool timerOn = false; // timer thingy
 
 
@@ -197,14 +204,6 @@ int main()
 	recordsTable.push_back(anoRecord);
 
 	
-	//for (int i = 0; i < 5; i++)
-	//{
-	//	sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
-	//	record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
-	//	record.SetText(data);
-	//	recordsTable.push_back(Record(record));
-	//}
-	
 	// to capture the time interval
 	std::time_t t;
 	std::tm* tm;
@@ -234,7 +233,8 @@ int main()
 			startTime = std::to_string(tm->tm_hour) + ":";
 			tm->tm_min < 10 ? startTime += "0" + std::to_string(tm->tm_min) : startTime += std::to_string(tm->tm_min);
 			tm->tm_hour > 12 ? startTime += " pm" : startTime += " am";
-			std::cout << "startTime: " << startTime << std::endl;
+
+			
 		}
 		else
 		{
@@ -254,14 +254,16 @@ int main()
 			endTime = std::to_string(tm->tm_hour) + ":";
 			tm->tm_min < 10 ? endTime += "0" + std::to_string(tm->tm_min) : endTime += std::to_string(tm->tm_min);
 			tm->tm_hour > 12 ? endTime += " pm" : endTime += " am";
-			std::cout << "endTime: " << endTime << std::endl;
+			
 			
 			data[0] = "Time Interval: " + startTime + " - " + endTime;
-
+			
 			sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
 			record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
 			record.SetText(data);
 			recordsTable.push_back(Record(record));
+			std::cout << timeToStr << std::endl;
+			miliSec = int(t2 / 10);
 
 		}
 		btnColorToggle = !btnColorToggle;
@@ -284,15 +286,50 @@ int main()
 		{
 			t1 = clock.getElapsedTime().asSeconds();
 			t2 = clock.getElapsedTime().asMilliseconds();
-			if (t1 > 1.f)
+			
+			//std::cout << int(t2 / 10) << std::endl;
+
+			if (miliSec > 0)
+			{
+				
+				if (t2 / 10 <= (100 - miliSec))
+				{
+					miliSec += t2 / 10;
+					std::cout << miliSec + t2 / 10 << std::endl;
+				}
+				else
+				{
+					miliSec = 0;
+					clock.restart();
+				}
+
+			}
+			else if (t2 / 10 >= 100)
 			{
 				seconds += 1;
 				clock.restart();
 			}
-			timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
-				+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(int(t2 / 10));
+			
+			if (miliSec > 0)
+			{
+				timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
+					+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(miliSec);
+			}
+			else
+			{
+				timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
+					+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(int(t2 / 10));
+			}
+
+			/*timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
+				+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(int(t2 / 10));*/
 			time.setString(timeToStr);
 		}
+
+		
+
+
+
 
 		window.clear(sf::Color::White);
 
