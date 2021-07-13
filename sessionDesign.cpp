@@ -4,6 +4,7 @@
 #include <ctime>
 #include <chrono>
 #include <time.h>
+#include <sstream>
 
 class Record
 {
@@ -65,7 +66,6 @@ class Record
 		{
 			this->dayT.setString(data);
 			this->dayT.setFillColor(sf::Color::White);
-			std::cout << "What happened" << std::endl;
 			this->rect.setFillColor(sf::Color::Black);
 			this->Cleft.setFillColor(sf::Color::Black);
 			this->Cright.setFillColor(sf::Color::Black);
@@ -181,7 +181,6 @@ int main()
 	trackingShape.setPosition({trackerText.getGlobalBounds().left+trackerText.getGlobalBounds().width+trackingShape.getRadius()*2, 
 								trackerText.getGlobalBounds().top});
 	trackingShape.setFillColor(stopColor);
-
 	bool showTimer = false;
 
 	// Records showing 
@@ -197,16 +196,22 @@ int main()
 	anoRecord.SetText(strData);
 	recordsTable.push_back(anoRecord);
 
-
-	for (int i = 0; i < 5; i++)
-	{
-		sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
-		record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
-		record.SetText(data);
-		recordsTable.push_back(Record(record));
-	}
 	
-
+	//for (int i = 0; i < 5; i++)
+	//{
+	//	sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
+	//	record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
+	//	record.SetText(data);
+	//	recordsTable.push_back(Record(record));
+	//}
+	
+	// to capture the time interval
+	std::time_t t;
+	std::tm* tm;
+	char* dt;
+	std::string startTime;
+	std::string endTime;
+	
 
 	auto testFunc = [&]()
 	{
@@ -221,14 +226,15 @@ int main()
 			startBtn->SetBtnPosition({ winCenter.x, bgStopImage.getGlobalBounds().height });
 			showTimer = true;
 
-			// Working with the system time and all that thing
-			std::time_t const t = std::time(NULL);
-			std::tm tm = *std::localtime(&t);
-			std::cout << std::put_time(&tm, "%A %T") << std::endl; // for displaying the time
+			// handling the start time of the time interval
+			t = std::time(NULL);
+			tm = std::localtime(&t);
 
-			char* dt = ctime(&t);
-			std::cout << dt << std::endl;
-
+			startTime.clear();
+			startTime = std::to_string(tm->tm_hour) + ":";
+			tm->tm_min < 10 ? startTime += "0" + std::to_string(tm->tm_min) : startTime += std::to_string(tm->tm_min);
+			tm->tm_hour > 12 ? startTime += " pm" : startTime += " am";
+			std::cout << "startTime: " << startTime << std::endl;
 		}
 		else
 		{
@@ -239,6 +245,24 @@ int main()
 			bgStopImage.setPosition({ 0.f, -200.f });
 			startBtn->SetBtnPosition({ winCenter.x, bgImage.getGlobalBounds().height });
 			showTimer = false;
+
+			// Working with the system time and all that thing
+			t = std::time(NULL);
+			tm = std::localtime(&t);
+
+			endTime.clear();
+			endTime = std::to_string(tm->tm_hour) + ":";
+			tm->tm_min < 10 ? endTime += "0" + std::to_string(tm->tm_min) : endTime += std::to_string(tm->tm_min);
+			tm->tm_hour > 12 ? endTime += " pm" : endTime += " am";
+			std::cout << "endTime: " << endTime << std::endl;
+			
+			data[0] = "Time Interval: " + startTime + " - " + endTime;
+
+			sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
+			record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
+			record.SetText(data);
+			recordsTable.push_back(Record(record));
+
 		}
 		btnColorToggle = !btnColorToggle;
 		
