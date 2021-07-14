@@ -165,6 +165,7 @@ int main()
 	sf::Int32 t2 = 0;
 	int seconds = 0;
 	int miliSec = 0;
+	int ms = 0;
 	bool timerOn = false; // timer thingy
 
 
@@ -234,7 +235,6 @@ int main()
 			tm->tm_min < 10 ? startTime += "0" + std::to_string(tm->tm_min) : startTime += std::to_string(tm->tm_min);
 			tm->tm_hour > 12 ? startTime += " pm" : startTime += " am";
 
-			
 		}
 		else
 		{
@@ -255,21 +255,24 @@ int main()
 			tm->tm_min < 10 ? endTime += "0" + std::to_string(tm->tm_min) : endTime += std::to_string(tm->tm_min);
 			tm->tm_hour > 12 ? endTime += " pm" : endTime += " am";
 			
-			
 			data[0] = "Time Interval: " + startTime + " - " + endTime;
 			
 			sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
 			record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
 			record.SetText(data);
 			recordsTable.push_back(Record(record));
-			std::cout << timeToStr << std::endl;
+			
 			miliSec = int(t2 / 10);
-
+			ms = int(t2 / 10);
+			std::cout << "\nSTOPPED\n";
+			std::cout << timeToStr << std::endl;
+			
 		}
 		btnColorToggle = !btnColorToggle;
 		
 	};
 
+	std::string mS;
 
 	while (window.isOpen())
 	{
@@ -286,49 +289,36 @@ int main()
 		{
 			t1 = clock.getElapsedTime().asSeconds();
 			t2 = clock.getElapsedTime().asMilliseconds();
-			
-			//std::cout << int(t2 / 10) << std::endl;
 
 			if (miliSec > 0)
 			{
-				
-				if (t2 / 10 <= (100 - miliSec))
+				if (t2 / 10 >= 1)
 				{
-					miliSec += t2 / 10;
-					std::cout << miliSec + t2 / 10 << std::endl;
-				}
-				else
-				{
-					miliSec = 0;
+					if (ms < 99)
+					{
+						ms++;
+					}
+					else
+					{
+						miliSec = 0;
+						seconds++;
+						ms = 0;
+					}
 					clock.restart();
 				}
-
 			}
-			else if (t2 / 10 >= 100)
-			{
+
+			else if (t2 / 10 >= 99)
+			{	
 				seconds += 1;
 				clock.restart();
 			}
-			
-			if (miliSec > 0)
-			{
-				timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
-					+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(miliSec);
-			}
-			else
-			{
-				timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
-					+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(int(t2 / 10));
-			}
 
-			/*timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
-				+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + std::to_string(int(t2 / 10));*/
+			miliSec == 0 ? mS = std::to_string(t2 / 10) : mS = std::to_string(ms);
+			timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
+				+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + mS;
 			time.setString(timeToStr);
 		}
-
-		
-
-
 
 
 		window.clear(sf::Color::White);

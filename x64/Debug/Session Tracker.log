@@ -1,5 +1,5 @@
 ﻿  sessionDesign.cpp
-C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\sessionDesign.cpp(230,14): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\sessionDesign.cpp(231,14): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
 C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\sessionDesign.cpp(251,14): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\sessionDesign.cpp(210,8): warning C4101: 'dt': unreferenced local variable
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\sessionDesign.cpp(211,8): warning C4101: 'dt': unreferenced local variable
   Session Tracker.vcxproj -> C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\x64\Debug\Session Tracker.exe
