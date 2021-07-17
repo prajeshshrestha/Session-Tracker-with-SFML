@@ -20,6 +20,7 @@ class Record
 		sf::FloatRect rectBounds;
 		sf::FloatRect timeTBounds;
 		sf::FloatRect durationTBounds;
+		bool isBar = false;
 
 		
 		Record(sf::Font& f)
@@ -62,7 +63,7 @@ class Record
 			/*this->timeT.setPosition({ this->rectPos.x - this->timeT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
 			this->durationT.setPosition({ 700.f - durationT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });*/
 
-			this->timeT.setPosition({ 30.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
+			this->timeT.setPosition({ 30.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 6 });
 			this->durationT.setPosition({ 650.f - durationT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
 			
 		}
@@ -70,6 +71,7 @@ class Record
 		// Overloaded
 		void SetText(std::string data)
 		{
+			this->isBar = true;
 			this->dayT.setString(data);
 			this->dayT.setFillColor(sf::Color::White);
 			this->rect.setFillColor(sf::Color::Black);
@@ -102,6 +104,43 @@ class Record
 			window.draw(this->dayT);
 		}
 };
+
+
+std::string timerDuration(std::vector<int> start, std::vector<int> end)
+{
+	std::vector<std::string> duraVec;
+	for (int i = end.size() - 1; i >= 0; --i)
+	{
+		if (end[i] < start[i])
+		{
+			if (i == end.size() - 1)
+			{
+				end[i] += 100;
+				end[int(i-1)]--;
+			}
+			else
+			{
+				end[i] += 60;
+				end[int(i-1)]--;
+			}
+		}
+
+
+		duraVec.insert(duraVec.begin(), std::to_string(end[i] - start[i]));
+	}
+	for (int i = 0; i < 2; i++)
+	{
+		if (duraVec[i].size() == 1)
+		{
+			duraVec[i].resize(2, '0');
+			std::reverse(duraVec[i].begin(), duraVec[i].end());
+		}
+	}
+	return duraVec[0] + ":" + duraVec[1] + ":" + duraVec[2] + "." + duraVec[3];
+}
+
+
+
 
 
 int main()
@@ -176,7 +215,7 @@ int main()
 	time.setFillColor(sf::Color::White);
 	time.setPosition({ winSizeF.x - 150.f, 120.f });
 	time.setCharacterSize(24);
-	std::string timeToStr; // time parsed string
+	std::string timeToStr ="00:00:0.00"; // time parsed string
 
 	// HRS MIN SEC below the timer
 	designateTime.setFillColor(sf::Color::White);
@@ -211,7 +250,15 @@ int main()
 	char* dt;
 	std::string startTime;
 	std::string endTime;
-	
+
+	std::string mS;
+	std::string hour;
+	std::string minutes;
+
+	std::string duration;
+	std::string startTimer;
+	std::string endTimer;
+
 
 	auto testFunc = [&]()
 	{
@@ -235,6 +282,8 @@ int main()
 			tm->tm_min < 10 ? startTime += "0" + std::to_string(tm->tm_min) : startTime += std::to_string(tm->tm_min);
 			tm->tm_hour > 12 ? startTime += " pm" : startTime += " am";
 
+			startTimer = timeToStr;
+
 		}
 		else
 		{
@@ -257,23 +306,74 @@ int main()
 			
 			data[0] = "Time Interval: " + startTime + " - " + endTime;
 			
+			
+			
+			miliSec = int(t2 / 10);
+			ms = int(t2 / 10);
+			endTimer = timeToStr;
+
+			// Finding the duration 
+			std::vector<int> startVec, endVec;
+			std::string temp;
+
+			for (auto str : startTimer)
+			{
+				if (str != ':' && str != '.')
+				{
+					temp += str;
+				}
+				else
+				{
+					startVec.push_back(stoi(temp));
+					temp = "";
+				}
+			}
+			startVec.push_back(stoi(temp));
+			temp = "";
+
+			for (auto str : endTimer)
+			{
+				if (str != ':' && str != '.')
+				{
+					temp += str;
+				}
+				else
+				{
+					endVec.push_back(stoi(temp));
+					temp = "";
+				}
+			}
+			endVec.push_back(stoi(temp));
+			
+
+			std::cout << "Start :" << std::endl;
+			for (auto str : startVec)
+				std::cout << str << "  ";
+			std::cout << "\n\nEnd: " << std::endl;
+			for (auto str : endVec)
+				std::cout << str << "  ";
+			std::cout << "\n\n";
+
+			duration = timerDuration(startVec, endVec);
+			std::cout << duration << std::endl;
+			
+			duration = "Duration: " + duration;
+
+			data[1] = duration;
+
 			sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
 			record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
 			record.SetText(data);
 			recordsTable.push_back(Record(record));
+
 			
-			miliSec = int(t2 / 10);
-			ms = int(t2 / 10);
-			std::cout << "\nSTOPPED\n";
-			std::cout << timeToStr << std::endl;
 			
 		}
 		btnColorToggle = !btnColorToggle;
 		
 	};
 
-	std::string mS;
-
+	
 	while (window.isOpen())
 	{
 		while (window.pollEvent(event))
@@ -284,6 +384,9 @@ int main()
 			}
 		}
 		startBtn->BtnEvents(window, event, testFunc);
+
+
+		// the main timer logic
 
 		if (timerOn)
 		{
@@ -314,9 +417,22 @@ int main()
 				clock.restart();
 			}
 
+			hour = std::to_string(seconds / 3600);
+			minutes = std::to_string((seconds / 60) % 60);
+
+			if (hour.size() == 1)
+			{
+				hour.resize(2, '0');
+				std::reverse(hour.begin(), hour.end());
+			}
+			if (minutes.size() == 1)
+			{
+				minutes.resize(2, '0');
+				std::reverse(minutes.begin(), minutes.end());
+			}
+
 			miliSec == 0 ? mS = std::to_string(t2 / 10) : mS = std::to_string(ms);
-			timeToStr = "0" + std::to_string(seconds / 3600) + ":" + "0"
-				+ std::to_string((seconds / 60) % 60) + ":" + std::to_string(seconds % 60) + "." + mS;
+			timeToStr = hour + ":" + minutes + ":" + std::to_string(seconds % 60) + "." + mS;
 			time.setString(timeToStr);
 		}
 
