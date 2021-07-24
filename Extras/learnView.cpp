@@ -28,6 +28,8 @@ int main()
 	//view.setCenter({ 400.f, 273.f });
 	//view.setSize({ 800.f, 546.f });
 	view.setViewport(sf::FloatRect(0.f, 0.355f, 1.f, 1.f));
+	
+	
 	bool spaceDown = false;
 
 	while (window.isOpen())
@@ -90,14 +92,7 @@ int main()
 		{
 			window.draw(filler);
 		}
-
-
 		window.setView(window.getDefaultView());
-
-
-
-
-
 		window.display();
 	}
 }

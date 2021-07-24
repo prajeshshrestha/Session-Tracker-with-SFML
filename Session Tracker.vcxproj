@@ -150,10 +150,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="btn.cpp" />
+    <ClCompile Include="inputField.cpp" />
     <ClCompile Include="sessionDesign.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Btn.h" />
+    <ClInclude Include="InputField.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

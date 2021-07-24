@@ -20,12 +20,20 @@ int main()
 
 
 	// Testing the button 
+	int fontSize = 24;
 	Btn *btn;
-	btn = new Btn("Clear", { winCenter.x, winCenter.y + 50.f}, 14, font);
+	btn = new Btn("Button", { winCenter.x, winCenter.y}, fontSize, font);
+	btn->SetFillColor(sf::Color(23, 137, 252));
+	btn->text.setFillColor(sf::Color::White);
 
+	Btn* btn2;
+	btn2 = new Btn("Button", { winCenter.x + btn->shape.getGlobalBounds().width + 100.f, winCenter.y }, fontSize, font);
+	btn2->SetFillColor(sf::Color(23, 137, 252));
+	btn2->text.setFillColor(sf::Color(23,137,252));
 
 	// Testing the inputfield
 	InputField input(winCenter, font);
+	InputField input2({winCenter.x, winCenter.y + 50.f}, font);
 
 
 	 
@@ -48,16 +56,16 @@ int main()
 					window.close();
 					break;
 			}
-			input.InputEvent(window, event);
+			input.InputEvent(window, event, changeInput);
 		}
-		btn->BtnEvents(window, event, changeInput);
+		//btn->BtnEvents(window, event, changeInput);
 		
 
-		
-		
-		window.clear(sf::Color(23, 137, 252));
-		btn->DrawTo(window);
+		window.clear(sf::Color(23,137,252));
+		//btn->DrawTo(window);
+		//btn2->DrawTo(window);
 		input.DrawTo(window);
+		input2.DrawTo(window);
 		window.display();
 	}
 }

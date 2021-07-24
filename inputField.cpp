@@ -155,6 +155,110 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event,
 	}
 }
 
+void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event,
+	std::function<void()>func)
+{
+
+	mousePos = sf::Mouse::getPosition(window);
+	mousePosView = static_cast<sf::Vector2f>(mousePos);
+
+	if (wholeInputRect.contains(mousePosView))
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			if (!mouseHeld)
+			{
+				mouseHeld = true;
+				isFocused = true;
+				shape.setFillColor(sf::Color(255, 255, 255, 255));
+				Cleft.setFillColor(sf::Color(255, 255, 255, 255));
+				Cright.setFillColor(sf::Color(255, 255, 255, 255));
+			}
+		}
+		else
+		{
+			mouseHeld = false;
+		}
+	}
+	else
+	{
+		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		{
+			if (!mouseHeld)
+			{
+				mouseHeld = true;
+				isFocused = false;
+			}
+		}
+		else
+		{
+			mouseHeld = false;
+		}
+	}
+	
+	if (isFocused)
+	{
+		if (inputText.size() >= 1 && inputText[inputText.size() - 1] != '_')
+		{
+			inputText += '_';
+			SetText(inputText);
+		}
+		// first time focussed
+		if (inputText.size() == 0)
+		{
+			inputText += "_";
+			SetText(inputText);
+		}
+		else
+		{
+			if (event.type == sf::Event::TextEntered)
+			{
+				if (event.text.unicode < 128)
+				{
+					if (inputText.size() == 1)
+					{
+						inputText.clear();
+					}
+
+					if (event.text.unicode == 8 && bufferString.size() >= 1)
+					{
+						bufferString.pop_back();
+					}
+					else if (text.getGlobalBounds().width < shape.getGlobalBounds().width && event.text.unicode != 8)
+					{
+						bufferString.push_back(static_cast<char>(event.text.unicode));
+					}
+
+					inputText.clear();
+					inputText += bufferString + "_";
+					SetText(inputText);
+				}
+			}
+		}
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+		{
+			this->savedString = bufferString;
+			this->bufferString = "";
+			this->inputText = "";
+			this->SetText("");
+			func();
+		}
+	}
+	else
+	{
+		shape.setFillColor(sf::Color(230, 230, 230));
+		Cleft.setFillColor(sf::Color(230, 230, 230));
+		Cright.setFillColor(sf::Color(230, 230, 230));
+		if (inputText.size() >= 1 && inputText[inputText.size() - 1] == '_')
+		{
+			inputText.pop_back();
+			SetText(inputText);
+		}
+	}
+	
+}
+
+
 
 void InputField::DrawTo(sf::RenderWindow& window)
 {

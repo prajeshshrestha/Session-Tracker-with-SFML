@@ -6,6 +6,12 @@
 #include <time.h>
 #include <sstream>
 
+
+// Color Container
+#define FADEW 230, 230, 230
+#define DATEBARC 41, 41, 41
+
+
 class Record
 {
 	public:
@@ -20,10 +26,13 @@ class Record
 		sf::FloatRect rectBounds;
 		sf::FloatRect timeTBounds;
 		sf::FloatRect durationTBounds;
-		bool isBar = false;
 
+		float rectW, rectH, circleRadius;
+
+		bool isBar = false;
+		bool date_bar;
 		
-		Record(sf::Font& f)
+		Record(sf::Font& f, bool isDate = 0)
 		{
 			this->font = f;
 			this->timeT.setFont(f);
@@ -32,39 +41,48 @@ class Record
 			this->durationT.setFont(f);
 			this->dayT.setFont(f);
 			this->dayT.setCharacterSize(16);
+			rectH = 30.f;
+			circleRadius = 15.f;
+			date_bar = isDate;
+			if (!isDate)
+			{
+				rectW = 700.f;
+				this->rect.setOrigin({ 0.f, rectH / 2 });
+			}
+			else
+			{
+				rectW = 300.f;
+				this->rect.setOrigin({ 0.f, rectH / 2 });
+			}
 
-			this->rect.setSize({700.f, 30.f});
-			this->rect.setOrigin({ 350, 15.f });
 
-			this->Cleft.setRadius(15.f);
-			this->Cright.setRadius(15.f);
-			this->Cleft.setOrigin({ 15.f, 15.f });
-			this->Cright.setOrigin({ 15.f, 15.f });
+			this->rect.setSize({ rectW, rectH  });
+			
+			this->Cleft.setRadius(circleRadius);
+			this->Cright.setRadius(circleRadius);
+			this->Cleft.setOrigin({ circleRadius, circleRadius });
+			this->Cright.setOrigin({ circleRadius, circleRadius });
+
 		}
 
 		void SetText(std::vector<std::string> data)
 		{
+
 			this->recordData = data;
 			this->timeT.setString(this->recordData[0]);
 			this->durationT.setString(this->recordData[1]);
 			this->timeT.setFillColor(sf::Color::Black);
 			this->durationT.setFillColor(sf::Color::Black);
 
-			this->rect.setFillColor(sf::Color(200, 200, 200));
-			this->Cleft.setFillColor(sf::Color(200, 200, 200));
-			this->Cright.setFillColor(sf::Color(200, 200, 200));
-
-			/*this->timeT.setOrigin({ this->timeT.getGlobalBounds().width / 2, this->timeT.getGlobalBounds().height / 2 });
-			this->durationT.setOrigin({ this->durationT.getGlobalBounds().width / 2, this->durationT.getGlobalBounds().height / 2 });*/
+			this->rect.setFillColor(sf::Color(FADEW));
+			this->Cleft.setFillColor(sf::Color(FADEW));
+			this->Cright.setFillColor(sf::Color(FADEW));
 
 			this->timeT.setOrigin({ 0.f, this->timeT.getGlobalBounds().height / 2 });
 			this->durationT.setOrigin({ 0.f, this->durationT.getGlobalBounds().height / 2 });
 
-			/*this->timeT.setPosition({ this->rectPos.x - this->timeT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
-			this->durationT.setPosition({ 700.f - durationT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });*/
-
 			this->timeT.setPosition({ 30.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 6 });
-			this->durationT.setPosition({ 650.f - durationT.getGlobalBounds().width, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
+			this->durationT.setPosition({ 510.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 });
 			
 		}
 
@@ -74,12 +92,13 @@ class Record
 			this->isBar = true;
 			this->dayT.setString(data);
 			this->dayT.setFillColor(sf::Color::White);
-			this->rect.setFillColor(sf::Color::Black);
-			this->Cleft.setFillColor(sf::Color::Black);
-			this->Cright.setFillColor(sf::Color::Black);
+
+			this->rect.setFillColor(sf::Color(DATEBARC));
+			this->Cleft.setFillColor(sf::Color(DATEBARC));
+			this->Cright.setFillColor(sf::Color(DATEBARC));
 
 			this->dayT.setOrigin({ this->dayT.getGlobalBounds().width / 2, this->dayT.getGlobalBounds().height / 2 });
-			this->dayT.setPosition({ 50.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 - 3.f });
+			this->dayT.setPosition({ 70.f, this->rectPos.y - this->timeT.getGlobalBounds().height / 3 - 3.f });
 		}
 		
 
@@ -125,7 +144,6 @@ std::string timerDuration(std::vector<int> start, std::vector<int> end)
 			}
 		}
 
-
 		duraVec.insert(duraVec.begin(), std::to_string(end[i] - start[i]));
 	}
 	for (int i = 0; i < 2; i++)
@@ -139,15 +157,93 @@ std::string timerDuration(std::vector<int> start, std::vector<int> end)
 	return duraVec[0] + ":" + duraVec[1] + ":" + duraVec[2] + "." + duraVec[3];
 }
 
+std::map<std::string, int> month_map =
+{
+	{"Jan", 1},
+	{"Feb", 2},
+	{"Mar", 3},
+	{"Apr", 4},
+	{"May", 5},
+	{"Jun", 6},
+	{"Jul", 7},
+	{"Aug", 8},
+	{"Sep", 9},
+	{"Oct", 10},
+	{"Nov", 11},
+	{"Dec", 12}
+};
+
+std::vector<int> ConvertDateToVec(std::string date_string)
+{
+	std::vector<std::string> separate_string;
+	std::string temp_str;
+	std::istringstream ss(date_string);
+	while (ss >> temp_str)
+	{
+		separate_string.push_back(temp_str);
+	}
+	return {
+		stoi(separate_string[0]), month_map[separate_string[1]], stoi(separate_string[2])
+	};
+}
+
+auto com = [&](const std::string& first, const std::string& second)
+{
+	std::vector<int> date_first = ConvertDateToVec(first);
+	std::vector<int> date_second = ConvertDateToVec(second);
+	return date_first[2] > date_second[2] or date_first[1] > date_second[1] or date_first[0] > date_second[0];
+};
+
+std::map<std::string, std::vector<std::vector<std::string>>, decltype(com)> data_to_map(com);
+std::map<std::string, std::vector<std::vector<std::string>>>::iterator it;
 
 
-
+void map_to_records_vec(std::vector<Record> &recordsTable, sf::Font &robotoFont)
+{
+	Record tableDate(robotoFont, true);
+	Record record(robotoFont);
+	for (it = data_to_map.begin(); it != data_to_map.end(); it++)
+	{
+		if (it == data_to_map.begin())
+		{
+			tableDate.SetRectPosition({ 20.f, 15.f });
+			tableDate.SetText(it->first);
+			recordsTable.push_back(Record(tableDate));
+		}
+		else
+		{
+			sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
+			tableDate.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
+			tableDate.SetText(it->first);
+			recordsTable.push_back(Record(tableDate));
+		}
+		for (size_t i = 0; i < it->second.size(); ++i)
+		{
+			sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
+			record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
+			record.SetText(it->second[i]);
+			recordsTable.push_back(Record(record));
+		}
+	}
+	for (it = data_to_map.begin(); it != data_to_map.end(); ++it)
+	{
+		std::cout << it->first << std::endl;
+		for (size_t i = 0; i < it->second.size(); ++i)
+		{
+			for (size_t j = 0; j < it->second[i].size(); ++j)
+			{
+				std::cout << it->second[i][j] << '\t';
+			}
+			std::cout << std::endl;
+		}
+	}
+}
 
 int main()
 {
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
-	sf::RenderWindow window(sf::VideoMode(740, 560), "Session", sf::Style::Default, settings);
+	sf::RenderWindow window(sf::VideoMode(760, 675), "Session", sf::Style::Default, settings);
 	sf::Event event;
 
 	// Window component
@@ -157,11 +253,11 @@ int main()
 
 	//Background thingy
 	sf::Texture bgImageTex, bgStopTex;
-	if (!bgImageTex.loadFromFile("Texture/bgImageText.png"))
-		throw "Error in loading the 'bgImageText'";
+	if (!bgImageTex.loadFromFile("Texture/bgImageText1.png"))
+		throw "Error in loading the 'bgImageText1'";
 
-	if (!bgStopTex.loadFromFile("Texture/stopTimer.png"))
-		throw "Error in loading the 'stopTimer.png'";
+	if (!bgStopTex.loadFromFile("Texture/stopTimer1.png"))
+		throw "Error in loading the 'stopTimer1.png'";
 	sf::Sprite bgImage, bgStopImage;
 	bgImage.setTexture(bgImageTex);
 	bgImage.setPosition({ 0.f, 0.f });
@@ -230,20 +326,78 @@ int main()
 	trackingShape.setFillColor(stopColor);
 	bool showTimer = false;
 
-	// Records showing 
-	std::vector<std::string> data = { "Time interval:   8:19am - 9:20am", "Duration:   01:00:40" };
+
+	// dummy data just to show
+	std::vector<std::string> data = {"Time Stamp: 12:56 am - 3:02pm", "Duration: 02:06:56.98"};
+	// record object creation
 	Record record(robotoFont);
 	std::vector<Record> recordsTable;
-	record.SetRectPosition({ winCenter.x, 220.f });
-
-	Record anoRecord(robotoFont);
-	std::string strData = "Today";
+	std::string date_string;
+	std::ostringstream ss;
 	
-	anoRecord.SetRectPosition({ winCenter.x, 220.f });
-	anoRecord.SetText(strData);
-	recordsTable.push_back(anoRecord);
-
 	
+	// testing the theory of working with the data base
+	std::vector<std::vector<std::string>> date_vec =
+	{
+		{"20 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:01:56.98"},
+		{"20 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:02:56.98"},
+		{"20 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:03:56.98"},
+		{"19 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:04:56.98"},
+		{"19 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:05:56.98"},
+		{"19 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:06:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:07:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:08:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:09:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:10:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:11:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:12:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:13:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:14:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:15:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:16:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:17:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:18:56.98"},
+		{"19 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:06:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:07:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:08:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:09:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:10:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:11:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:12:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:13:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:14:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:15:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:16:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:17:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:18:56.98"},
+		{"19 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:06:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:07:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:08:56.98"},
+		{"18 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:09:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:10:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:11:56.98"},
+		{"17 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:12:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:13:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:14:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:15:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:16:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:17:56.98"},
+		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:18:56.98"},
+	};                   
+
+	std::vector<std::string> vecData;
+
+	for (size_t i = 0; i < date_vec.size(); i++)
+	{
+		vecData = { date_vec[i][1], date_vec[i][2] };
+		data_to_map[date_vec[i][0]].push_back(vecData);
+	}
+
+	Record tableDate(robotoFont, true);
+	map_to_records_vec(recordsTable, robotoFont);
+
+
+
 	// to capture the time interval
 	std::time_t t;
 	std::tm* tm;
@@ -258,6 +412,26 @@ int main()
 	std::string duration;
 	std::string startTimer;
 	std::string endTimer;
+
+
+	// Today date
+	t = std::time(NULL);
+	tm = std::localtime(&t);
+	ss << std::put_time(tm, "%e %b %Y");
+	date_string = ss.str();
+	std::cout << "Date_String: " << date_string << std::endl;
+
+
+	// Inserting the view thingy
+	sf::View scroll_view;
+	scroll_view.reset(sf::FloatRect(0.f, 0.f, 760.f, 675.f));
+	scroll_view.setViewport(sf::FloatRect(0.f, 0.326f, 1.f, 1.f));
+
+	// add the scroll bar 
+	sf::RectangleShape scroll_bar({18.f, 120.f});
+	scroll_bar.setFillColor(sf::Color::Black);
+	scroll_bar.setPosition({741.f, 0.f});
+	scroll_bar.setSize({18.f, 207025 / ((recordsTable.size() + 1) * 35.f)});
 
 
 	auto testFunc = [&]()
@@ -283,7 +457,6 @@ int main()
 			tm->tm_hour > 12 ? startTime += " pm" : startTime += " am";
 
 			startTimer = timeToStr;
-
 		}
 		else
 		{
@@ -304,8 +477,7 @@ int main()
 			tm->tm_min < 10 ? endTime += "0" + std::to_string(tm->tm_min) : endTime += std::to_string(tm->tm_min);
 			tm->tm_hour > 12 ? endTime += " pm" : endTime += " am";
 			
-			data[0] = "Time Interval: " + startTime + " - " + endTime;
-			
+			data[0] = "Time Stamp: " + startTime + " - " + endTime;
 			
 			
 			miliSec = int(t2 / 10);
@@ -346,14 +518,6 @@ int main()
 			endVec.push_back(stoi(temp));
 			
 
-			std::cout << "Start :" << std::endl;
-			for (auto str : startVec)
-				std::cout << str << "  ";
-			std::cout << "\n\nEnd: " << std::endl;
-			for (auto str : endVec)
-				std::cout << str << "  ";
-			std::cout << "\n\n";
-
 			duration = timerDuration(startVec, endVec);
 			std::cout << duration << std::endl;
 			
@@ -361,13 +525,9 @@ int main()
 
 			data[1] = duration;
 
-			sf::Vector2f lastRecordPos = recordsTable[recordsTable.size() - 1].rect.getPosition();
-			record.SetRectPosition({ lastRecordPos.x, lastRecordPos.y + 35.f });
-			record.SetText(data);
-			recordsTable.push_back(Record(record));
-
-			
-			
+			data_to_map[date_string].push_back(data);
+			recordsTable.clear();
+			map_to_records_vec(recordsTable, robotoFont);
 		}
 		btnColorToggle = !btnColorToggle;
 		
@@ -382,9 +542,43 @@ int main()
 			{
 				window.close();
 			}
+			if (recordsTable.size() > 13)
+			{
+				//std::cout << "Scroll bar: " << scroll_bar.getGlobalBounds().top + scroll_bar.getGlobalBounds().height << std::endl;
+				scroll_bar.setSize({ 18.f, 207025 / ((recordsTable.size() + 1) * 35.f) });
+				float estimated_height = (recordsTable.size() - 12) * 35.f + 337.5;
+				float scroll_bar_move = (((recordsTable.size() - 12) * 35.f + 455.f) - scroll_bar.getSize().y) / (recordsTable.size() - 12);
+				std::cout << scroll_view.getCenter().y+scroll_view.getSize().y/2 << std::endl;
+				if (event.type == sf::Event::MouseWheelMoved)
+				{
+					
+					if (scroll_view.getCenter().y != 337.5)
+					{
+						if (event.mouseWheel.delta >= 1)
+						{
+							scroll_view.move(0.f, -35.f);
+							scroll_bar.move(0.f, -scroll_bar_move);
+						}
+					}
+					
+					if (scroll_view.getCenter().y != estimated_height)
+					{
+						if (event.mouseWheel.delta <= -1)
+						{
+							scroll_view.move(0.f, 35.f);
+							/*if (scroll_bar.getGlobalBounds().top+scroll_bar.getGlobalBounds().height > 730.f)
+							{
+								scroll_bar.setPosition({ scroll_bar.getPosition().x, 610.f });
+							}*/
+							
+							scroll_bar.move(0.f, scroll_bar_move);
+						}
+					}
+				}
+			}
+
 		}
 		startBtn->BtnEvents(window, event, testFunc);
-
 
 		// the main timer logic
 
@@ -439,6 +633,23 @@ int main()
 
 		window.clear(sf::Color::White);
 
+		//scroll view shown here
+		window.setView(scroll_view);
+		window.draw(scroll_bar);
+		for (auto& record : recordsTable)
+		{
+			if (record.date_bar)
+			{
+				if (record.dayT.getString() == date_string)
+				{
+					record.dayT.setString("Today");
+				}
+			}
+			record.DrawTo(window);
+		}
+
+		window.setView(window.getDefaultView());
+		
 		window.draw(bgImage);
 		window.draw(bgStopImage);
 		window.draw(uiText);
@@ -451,11 +662,8 @@ int main()
 		}
 		window.draw(circle);
 		startBtn->DrawTo(window);
+	
 
-		for (auto& record : recordsTable)
-		{
-			record.DrawTo(window);
-		}
 		window.display();
 	}
 }
