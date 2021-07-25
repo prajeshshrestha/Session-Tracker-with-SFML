@@ -5,11 +5,18 @@
 #include <chrono>
 #include <time.h>
 #include <sstream>
-
+#include <sqlite3.h>
+#define SQLITE_OK 0
 
 // Color Container
 #define FADEW 230, 230, 230
 #define DATEBARC 41, 41, 41
+
+static int selectData(const char* s);
+static int insertData(const char* s);
+static int callback(void*, int, char**, char**);
+std::vector<std::string> string_to_2dVec_parser(char* row);
+std::vector<std::vector<std::string>> result_vec;
 
 
 class Record
@@ -239,6 +246,11 @@ void map_to_records_vec(std::vector<Record> &recordsTable, sf::Font &robotoFont)
 	}
 }
 
+
+// global section for the database component
+std::vector < std::vector < std::string>> new_data_added_vec;
+
+
 int main()
 {
 	sf::ContextSettings settings;
@@ -337,7 +349,7 @@ int main()
 	
 	
 	// testing the theory of working with the data base
-	std::vector<std::vector<std::string>> date_vec =
+/*	std::vector<std::vector<std::string>> date_vec =
 	{
 		{"20 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:01:56.98"},
 		{"20 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:02:56.98"},
@@ -383,7 +395,13 @@ int main()
 		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:16:56.98"},
 		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:17:56.98"},
 		{"16 Jul 2021", "Time Stamp: 12:00 am - 12:00 pm", "Duration: 00:18:56.98"},
-	};                   
+	}; */                  
+
+	//working with the database
+	std::vector<std::vector<std::string>> date_vec;
+	const char* dir = "C:\\Users\\Progosta\\Desktop\\Tori Laure\\Session Tracker\\Session Tracker\\Session.db";
+	selectData(dir);
+	date_vec = result_vec;
 
 	std::vector<std::string> vecData;
 
@@ -395,7 +413,6 @@ int main()
 
 	Record tableDate(robotoFont, true);
 	map_to_records_vec(recordsTable, robotoFont);
-
 
 
 	// to capture the time interval
@@ -429,6 +446,7 @@ int main()
 
 	// add the scroll bar 
 	sf::RectangleShape scroll_bar({18.f, 120.f});
+	bool show_scroll_bar = false;
 	scroll_bar.setFillColor(sf::Color::Black);
 	scroll_bar.setPosition({741.f, 0.f});
 	scroll_bar.setSize({18.f, 207025 / ((recordsTable.size() + 1) * 35.f)});
@@ -528,6 +546,7 @@ int main()
 			data_to_map[date_string].push_back(data);
 			recordsTable.clear();
 			map_to_records_vec(recordsTable, robotoFont);
+			new_data_added_vec.push_back({ date_string, data[0], data[1] });
 		}
 		btnColorToggle = !btnColorToggle;
 		
@@ -544,11 +563,10 @@ int main()
 			}
 			if (recordsTable.size() > 13)
 			{
-				//std::cout << "Scroll bar: " << scroll_bar.getGlobalBounds().top + scroll_bar.getGlobalBounds().height << std::endl;
+				show_scroll_bar = true;
 				scroll_bar.setSize({ 18.f, 207025 / ((recordsTable.size() + 1) * 35.f) });
 				float estimated_height = (recordsTable.size() - 12) * 35.f + 337.5;
 				float scroll_bar_move = (((recordsTable.size() - 12) * 35.f + 455.f) - scroll_bar.getSize().y) / (recordsTable.size() - 12);
-				std::cout << scroll_view.getCenter().y+scroll_view.getSize().y/2 << std::endl;
 				if (event.type == sf::Event::MouseWheelMoved)
 				{
 					
@@ -565,12 +583,7 @@ int main()
 					{
 						if (event.mouseWheel.delta <= -1)
 						{
-							scroll_view.move(0.f, 35.f);
-							/*if (scroll_bar.getGlobalBounds().top+scroll_bar.getGlobalBounds().height > 730.f)
-							{
-								scroll_bar.setPosition({ scroll_bar.getPosition().x, 610.f });
-							}*/
-							
+							scroll_view.move(0.f, 35.f);							
 							scroll_bar.move(0.f, scroll_bar_move);
 						}
 					}
@@ -635,7 +648,10 @@ int main()
 
 		//scroll view shown here
 		window.setView(scroll_view);
-		window.draw(scroll_bar);
+		if (show_scroll_bar)
+		{
+			window.draw(scroll_bar);
+		}
 		for (auto& record : recordsTable)
 		{
 			if (record.date_bar)
@@ -663,7 +679,94 @@ int main()
 		window.draw(circle);
 		startBtn->DrawTo(window);
 	
-
 		window.display();
 	}
+
+	if (!new_data_added_vec.empty())
+	{
+		insertData(dir);
+	}
+}
+
+
+static int selectData(const char* s)
+{
+	sqlite3* DB;
+	char* messageError;
+
+	std::string sql = "SELECT * FROM SESSION_LIST;";
+
+	int exit = sqlite3_open(s, &DB);
+	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
+	exit = sqlite3_exec(DB, sql.c_str(), callback, NULL, &messageError);
+
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error in selectData function." << std::endl;
+		sqlite3_free(messageError);
+	}
+	else
+		std::cout << "Records selected Successfully!" << std::endl;
+
+	return 0;
+}
+
+static int insertData(const char* s)
+{
+	sqlite3* DB;
+	char* messageError;
+	int exit = sqlite3_open(s, &DB);
+	std::string sql;
+	
+	if (!new_data_added_vec.empty())
+	{
+		std::string tester = "";
+		for (size_t i = 0; i < new_data_added_vec.size(); ++i)
+		{
+			tester += "('" + new_data_added_vec[i][0] + "_" + new_data_added_vec[i][1] + "_" + new_data_added_vec[i][2] + "'),";
+		}
+		tester.erase(tester.size() - 1, 1);
+
+
+		sql = "INSERT INTO SESSION_LIST (session_detail) VALUES" + tester + ";";
+		exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
+		if (exit != SQLITE_OK) {
+			std::cerr << "Error in insertData function." << std::endl;
+			sqlite3_free(messageError);
+		}
+		else
+			std::cout << "Records inserted Successfully!" << std::endl;
+	}
+	
+	return 0;
+}
+
+static int callback(void* NotUsed, int argc, char** argv, char** azColName)
+{
+	result_vec.push_back(string_to_2dVec_parser(argv[1]));
+
+	return 0;
+}
+
+
+
+std::vector<std::string> string_to_2dVec_parser(char* row)
+{
+	std::vector<std::string> result;
+	std::string temp = "";
+	std::string row_data = row;
+
+	for (char str : row_data)
+	{
+		if (str != '_')
+		{
+			temp += str;
+		}
+		else
+		{
+			result.push_back(temp);
+			temp = "";
+		}
+	}
+	result.push_back(temp);
+	return result;
 }

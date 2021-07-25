@@ -152,6 +152,7 @@
     <ClCompile Include="btn.cpp" />
     <ClCompile Include="inputField.cpp" />
     <ClCompile Include="sessionDesign.cpp" />
+    <ClCompile Include="sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Btn.h" />
