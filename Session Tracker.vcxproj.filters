@@ -24,10 +24,13 @@
     <ClCompile Include="inputField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sessionDesign.cpp">
+    <ClCompile Include="sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sqlite3.c">
+    <ClCompile Include="test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -36,6 +39,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InputField.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

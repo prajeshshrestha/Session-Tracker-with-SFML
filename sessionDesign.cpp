@@ -270,6 +270,7 @@ int main()
 
 	if (!bgStopTex.loadFromFile("Texture/stopTimer1.png"))
 		throw "Error in loading the 'stopTimer1.png'";
+
 	sf::Sprite bgImage, bgStopImage;
 	bgImage.setTexture(bgImageTex);
 	bgImage.setPosition({ 0.f, 0.f });
