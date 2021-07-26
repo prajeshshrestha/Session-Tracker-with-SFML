@@ -1,7 +1,14 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include <stdc++.h>
 #include "Btn.h"
 #include <vector>
+#include <iostream>
+#include <sstream>
+#include <sqlite3.h>
+#include <chrono>
+#include <ctime>
+#include <time.h>
 
 #define TEXT_CHAR_SIZE 16
 #define DETAIL_BAR_WIDTH 700.f
@@ -46,6 +53,7 @@ class Record
 		bool date_bar;
 
 		// CONSTRUCTORS 
+		Record() {}
 		Record(sf::Font& f, bool is_date = 0);
 		void Set_Text(std::vector<std::string> data);
 		void Set_Text(std::string data);
@@ -88,6 +96,25 @@ class Session
 		bool timer_on;
 		bool show_timer;
 
+		// RECORDS and its Components
+		Record detail_record, date_record;
+		std::vector<Record> records_table;
+		std::string date_string;
+		std::ostringstream ss;
+
+		// TIME DATA (interval, date)
+		std::time_t t;
+		std::tm* tm;
+		char* dt;
+		std::string start_time;
+		std::string end_time;
+		std::string mS;
+		std::string hours;
+		std::string minutes;
+		std::string duration;
+		std::string start_timer;
+		std::string end_timer;
+
 
 		Session(sf::RenderWindow& window);
 		void init_variables();
@@ -96,6 +123,42 @@ class Session
 		void init_UI_components();
 		void create_toggle_btn();
 		void load_clock_components();
+		void today_date();
 
+
+		// HELPS COMPONENTS FOR DB
+		std::map<std::string, std::vector<std::vector<std::string>>, comparator> data_to_map;
+		std::map<std::string, std::vector<std::vector<std::string>>>::iterator it;
+
+		// PARSER FUNCTIONS
+		void Map_To_Records_Vec();
+
+	
+		
+
+};
+
+class comparator
+{
+	public:
+		bool operator()(const std::string& first, std::string& second) const;
+
+};
+
+std::vector<int> convert_date_to_vec(std::string date_string);
+std::map<std::string, int> month_map = 
+{
+	{"Jan", 1},
+	{ "Feb", 2 },
+	{ "Mar", 3 },
+	{ "Apr", 4 },
+	{ "May", 5 },
+	{ "Jun", 6 },
+	{ "Jul", 7 },
+	{ "Aug", 8 },
+	{ "Sep", 9 },
+	{ "Oct", 10 },
+	{ "Nov", 11 },
+	{ "Dec", 12 }
 };
 

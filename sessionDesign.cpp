@@ -19,6 +19,9 @@ std::vector<std::string> string_to_2dVec_parser(char* row);
 std::vector<std::vector<std::string>> result_vec;
 
 
+
+
+
 class Record
 {
 	public:
@@ -194,14 +197,28 @@ std::vector<int> ConvertDateToVec(std::string date_string)
 	};
 }
 
-auto com = [&](const std::string& first, const std::string& second)
+class com
 {
-	std::vector<int> date_first = ConvertDateToVec(first);
-	std::vector<int> date_second = ConvertDateToVec(second);
-	return date_first[2] > date_second[2] or date_first[1] > date_second[1] or date_first[0] > date_second[0];
+public:
+	bool operator()(const std::string &first,  const std::string &second) const
+	{
+		std::vector<int> date_first = ConvertDateToVec(first);
+		std::vector<int> date_second = ConvertDateToVec(second);
+		return date_first[2] > date_second[2] or date_first[1] > date_second[1] or date_first[0] > date_second[0];
+	}
 };
 
-std::map<std::string, std::vector<std::vector<std::string>>, decltype(com)> data_to_map(com);
+//auto com = [&](const std::string& first, const std::string& second)
+//{
+//	std::vector<int> date_first = ConvertDateToVec(first);
+//	std::vector<int> date_second = ConvertDateToVec(second);
+//	return date_first[2] > date_second[2] or date_first[1] > date_second[1] or date_first[0] > date_second[0];
+//};
+
+
+
+
+std::map<std::string, std::vector<std::vector<std::string>>, com> data_to_map;
 std::map<std::string, std::vector<std::vector<std::string>>>::iterator it;
 
 

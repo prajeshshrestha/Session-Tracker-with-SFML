@@ -1,5 +1,6 @@
 #include "Session.h"
 
+
 Record::Record(sf::Font& f, bool is_date)
 {
 	this->font = f;
@@ -91,10 +92,12 @@ Session::Session(sf::RenderWindow& window)
 	load_session_name();
 	init_UI_components();
 	load_clock_components();
+	init_variables();
 }
 
 void Session::init_variables()
 {
+
 }
 
 void Session::load_tex_font()
@@ -170,7 +173,75 @@ void Session::load_clock_components()
 	tracking_shape.setFillColor(sf::Color(STOP_BTN_COLOR));
 
 	show_timer = false;
+}
+
+void Session::today_date()
+{
+	t = std::time(NULL);
+	tm = std::localtime(&t);
+	ss << std::put_time(tm, "%e %b %Y");
+	date_string = ss.str();
+}
+
+void Session::Map_To_Records_Vec()
+{
+	Record tableDate(roboto_font, true);
+	Record record(roboto_font);
+	for (it = data_to_map.begin(); it != data_to_map.end(); it++)
+	{
+		if (it == data_to_map.begin())
+		{
+			tableDate.Set_Rect_Position({ 20.f, 15.f });
+			tableDate.Set_Text(it->first);
+			records_table.push_back(Record(tableDate));
+		}
+		else
+		{
+			sf::Vector2f lastRecordPos = records_table[records_table.size() - 1].rect.getPosition();
+			tableDate.Set_Rect_Position({ lastRecordPos.x, lastRecordPos.y + 35.f });
+			tableDate.Set_Text(it->first);
+			records_table.push_back(Record(tableDate));
+		}
+		for (size_t i = 0; i < it->second.size(); ++i)
+		{
+			sf::Vector2f lastRecordPos = records_table[records_table.size() - 1].rect.getPosition();
+			record.Set_Rect_Position({ lastRecordPos.x, lastRecordPos.y + 35.f });
+			record.Set_Text(it->second[i]);
+			records_table.push_back(Record(record));
+		}
+	}
+	for (it = data_to_map.begin(); it != data_to_map.end(); ++it)
+	{
+		std::cout << it->first << std::endl;
+		for (size_t i = 0; i < it->second.size(); ++i)
+		{
+			for (size_t j = 0; j < it->second[i].size(); ++j)
+			{
+				std::cout << it->second[i][j] << '\t';
+			}
+			std::cout << std::endl;
+		}
+	}
+}
 
 
+bool comparator::operator()(const std::string& first, std::string& second) const
+{
+	std::vector<int> date_first = convert_date_to_vec(first);
+	std::vector<int> date_second = convert_date_to_vec(second);
+	return date_first[2] > date_second[2] or date_first[1] > date_second[1] or date_first[0] > date_second[0];
+}
 
+std::vector<int> convert_date_to_vec(std::string date_string)
+{
+	std::vector<std::string> separate_string;
+	std::string temp_str;
+	std::istringstream ss(date_string);
+	while (ss >> temp_str)
+	{
+		separate_string.push_back(temp_str);
+	}
+	return {
+		stoi(separate_string[0]), month_map[separate_string[1]], stoi(separate_string[2])
+	};
 }
