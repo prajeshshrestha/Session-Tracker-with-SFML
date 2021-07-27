@@ -21,9 +21,6 @@
     <ClCompile Include="btn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="inputField.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sqlite3.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -36,9 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Btn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="InputField.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Session.h">

@@ -61,6 +61,15 @@ class Record
 		void Draw_To(sf::RenderWindow& window);
 };
 
+std::vector<int> Convert_Date_To_Vec(std::string date_string);
+
+class Comparator_Func
+{
+	public:
+		bool operator()(const std::string& first, const std::string& second) const;
+
+};
+
 class Session
 {
 	public:
@@ -81,7 +90,12 @@ class Session
 
 		// UI Components
 		Btn* toggle_btn;
+		Btn* home_btn;
+		bool home_btn_clicked;
 		bool btn_color_toggle;
+		std::string session_name;
+		sf::RectangleShape scroll_bar;
+		bool show_scroll_bar;
 
 		// CLOCK 
 		sf::Clock clock;
@@ -101,11 +115,9 @@ class Session
 		std::vector<Record> records_table;
 		std::string date_string;
 		std::ostringstream ss;
+		std::vector<std::string> time_data;
 
 		// TIME DATA (interval, date)
-		std::time_t t;
-		std::tm* tm;
-		char* dt;
 		std::string start_time;
 		std::string end_time;
 		std::string mS;
@@ -114,51 +126,48 @@ class Session
 		std::string duration;
 		std::string start_timer;
 		std::string end_timer;
+		std::string timer_string;
 
+		// WRAPPER FUNCTION for Button
+		std::function<void()> Btn_Trigger;
+		std::function<void()> Home_Btn_Trigger;
 
 		Session(sf::RenderWindow& window);
-		void init_variables();
-		void load_tex_font();
-		void load_session_name();
-		void init_UI_components();
-		void create_toggle_btn();
-		void load_clock_components();
-		void today_date();
 
+		void Init_Variables();
+		void Load_Tex_Font();
+		void load_session_name();
+		void Init_UI_Components();
+		void Create_Toggle_Btn();
+		void Load_Clock_Components(); 
+		void Today_Date();
+		void Create_Home_Btn();
+		void Get_DB_Data();
+		void Update_DB_Data();
 
 		// HELPS COMPONENTS FOR DB
-		std::map<std::string, std::vector<std::vector<std::string>>, comparator> data_to_map;
+		std::map<std::string, std::vector<std::vector<std::string>>, Comparator_Func> data_to_map;
 		std::map<std::string, std::vector<std::vector<std::string>>>::iterator it;
+		std::vector<std::vector<std::string>> added_vectors;
+		const char* dir;
 
 		// PARSER FUNCTIONS
 		void Map_To_Records_Vec();
+		std::string Timer_Duration(std::vector<int> start, std::vector<int> end);
 
-	
-		
+		// RUNNING EVENTS
+		void Run_Events(sf::RenderWindow& window, sf::Event& event, bool& show_session, bool& show_button);
+		void Timer_Run_Event();
+		void View_Scroll_Event(sf::Event& event, sf::View& scroll_view);
+
+		// RENDER
+		void Draw_To_View(sf::RenderWindow& window);
+		void Draw_To_Main_Window(sf::RenderWindow& window);
 
 };
 
-class comparator
-{
-	public:
-		bool operator()(const std::string& first, std::string& second) const;
-
-};
-
-std::vector<int> convert_date_to_vec(std::string date_string);
-std::map<std::string, int> month_map = 
-{
-	{"Jan", 1},
-	{ "Feb", 2 },
-	{ "Mar", 3 },
-	{ "Apr", 4 },
-	{ "May", 5 },
-	{ "Jun", 6 },
-	{ "Jul", 7 },
-	{ "Aug", 8 },
-	{ "Sep", 9 },
-	{ "Oct", 10 },
-	{ "Nov", 11 },
-	{ "Dec", 12 }
-};
-
+// DATABASE HELPER FUNCTION
+std::vector<std::string> string_to_2dVec_parser(char* row);
+static int callback(void*, int, char**, char**);
+static int select_data(const char* s);
+static int insert_data(const char* s);

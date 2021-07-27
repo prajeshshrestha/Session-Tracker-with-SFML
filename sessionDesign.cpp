@@ -20,8 +20,6 @@ std::vector<std::vector<std::string>> result_vec;
 
 
 
-
-
 class Record
 {
 	public:
@@ -567,7 +565,6 @@ int main()
 			new_data_added_vec.push_back({ date_string, data[0], data[1] });
 		}
 		btnColorToggle = !btnColorToggle;
-		
 	};
 
 	
@@ -579,6 +576,8 @@ int main()
 			{
 				window.close();
 			}
+
+			// scroll bar thingy
 			if (recordsTable.size() > 13)
 			{
 				show_scroll_bar = true;
