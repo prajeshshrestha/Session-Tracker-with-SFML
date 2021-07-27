@@ -49,7 +49,7 @@ void InputField::SetWholeRect()
 
 void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event, 
 	bool &inputHide, bool &btnHide, std::vector<std::string> &inputTexts, 
-	std::function<void()>func)
+	bool& enter_pressed)
 {
 	
 		mousePos = sf::Mouse::getPosition(window);
@@ -138,7 +138,7 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event,
 				this->bufferString = "";
 				this->inputText = "";
 				this->SetText("");
-				func();
+				enter_pressed = true;
 			}
 		}
 		else

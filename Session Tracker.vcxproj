@@ -150,13 +150,17 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="btn.cpp" />
+    <ClCompile Include="inputField.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Session.cpp" />
+    <ClCompile Include="Session_Tracker.cpp" />
     <ClCompile Include="sqlite3.c" />
-    <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Btn.h" />
+    <ClInclude Include="InputField.h" />
     <ClInclude Include="Session.h" />
+    <ClInclude Include="Session_Tracker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

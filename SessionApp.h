@@ -16,15 +16,14 @@
 #define ANTIALIASING 8
 #define FPS 60
 
-
 class SessionApp
 {
 	private:
 		// Main data components
-		sf::RenderWindow* window;
-		sf::VideoMode videoMode;
-		sf::ContextSettings settings;
-		sf::Event event;
+		//sf::RenderWindow* window;
+		//sf::VideoMode videoMode;
+		//sf::ContextSettings settings;
+		//sf::Event event;
 
 		// UI Components
 		sf::Texture texture;
@@ -71,7 +70,7 @@ class SessionApp
 		~SessionApp();
 
 		// Accessors
-		const bool isRunning() const;
+		//const bool isRunning() const;
 
 		// Helper Functions
 		void PollEvents();
@@ -85,7 +84,7 @@ class SessionApp
 
 		// Window Update & Render
 		void Update();
-		void Render();
+		void Render(sf::RenderWindow& window);
 };
 
 #endif

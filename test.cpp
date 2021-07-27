@@ -21,8 +21,7 @@ int main()
 	scroll_view.setViewport(sf::FloatRect(0.f, 0.326f, 1.f, 1.f));
 	std::string name = "Prajesh";
 
-	//
-	Session session(window);
+	Session session(window, "Test");
 	bool show_session = false;
 	bool show_button = true;
 

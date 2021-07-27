@@ -49,7 +49,7 @@ class InputField
 		void SetWholeRect();
 		void InputEvent(sf::RenderWindow& window, sf::Event& event, bool& inputHide, 
 						bool& btnHide, std::vector<std::string>& inputTexts,
-						std::function<void()> func);
+						bool& enter_pressed);
 		void InputEvent(sf::RenderWindow& window, sf::Event& event, 
 			std::function<void()> func);
 		void DrawTo(sf::RenderWindow& window);

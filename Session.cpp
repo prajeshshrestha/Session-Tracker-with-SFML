@@ -83,12 +83,13 @@ std::vector<std::vector<std::string>> result_vec;
 std::vector<std::vector<std::string>> new_data_added_vec;
 
 // Session Members
-Session::Session(sf::RenderWindow& window)
+Session::Session(sf::RenderWindow& window, std::string name)
 {
 	// setting window info
 	win_size = window.getSize();
 	win_sizeF = static_cast<sf::Vector2f>(win_size);
 	win_center = sf::Vector2f({ win_sizeF.x / 2, win_sizeF.y / 2 });
+	session_name = name;
 	Load_Tex_Font();
 	load_session_name();
 	Init_UI_Components();
@@ -96,6 +97,7 @@ Session::Session(sf::RenderWindow& window)
 	Today_Date();
 	Init_Variables();
 	Get_DB_Data();
+	
 	time_data = { "", "" };
 }
 
@@ -234,9 +236,11 @@ void Session::Load_Tex_Font()
 	bg_stop_image.setPosition({ 0.f, -200.f });
 }
 
+
 void Session::load_session_name()
 {
-	session_text = sf::Text("Engineering", kaushan_font, 30);
+	std::cout << session_name << std::endl;
+	session_text = sf::Text(session_name, kaushan_font, 30);
 	session_text.setPosition({ win_center.x - session_text.getGlobalBounds().width / 2, 35.f });
 	session_text.setFillColor(sf::Color::White);
 
@@ -300,7 +304,7 @@ void Session::Today_Date()
 
 void Session::Create_Home_Btn()
 {
-	home_btn = new Btn("Home", { 60.f, 30.f }, 14, roboto_font);
+	home_btn = new Btn("Home", { 55.f, 30.f }, 14, roboto_font);
 	home_btn->SetFillColor(sf::Color(DATE_BAR_C));
 	home_btn->text.setFillColor(sf::Color::White);
 	home_btn_clicked = false;

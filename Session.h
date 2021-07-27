@@ -132,7 +132,7 @@ class Session
 		std::function<void()> Btn_Trigger;
 		std::function<void()> Home_Btn_Trigger;
 
-		Session(sf::RenderWindow& window);
+		Session(sf::RenderWindow& window, std::string name);
 
 		void Init_Variables();
 		void Load_Tex_Font();

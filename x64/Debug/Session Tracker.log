@@ -1,7 +1,13 @@
-﻿  Session.cpp
-C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\Session.cpp(120,23): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\Session.cpp(141,23): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\Session.cpp(296,21): warning C4996: 'localtime': This function or variable may be unsafe. Consider using localtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\Session.cpp(364,2): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\Session.cpp(462,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+﻿  Session_Tracker.cpp
+  inputField.cpp
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\inputField.cpp(14,32): warning C4267: 'argument': conversion from 'size_t' to 'unsigned int', possible loss of data
+  main.cpp
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\main.cpp(9,21): warning C4244: '=': conversion from 'float' to 'unsigned int', possible loss of data
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\main.cpp(10,22): warning C4244: '=': conversion from 'float' to 'unsigned int', possible loss of data
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\main.cpp(16,66): warning C4305: 'argument': truncation from 'double' to 'T'
+          with
+          [
+              T=float
+          ]
+  Generating Code...
   Session Tracker.vcxproj -> C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\x64\Debug\Session Tracker.exe

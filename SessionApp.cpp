@@ -2,9 +2,9 @@
 
 void SessionApp::InitVariables()
 {
-	this->videoMode.width = WINWIDTH;
-	this->videoMode.height = WINHEIGHT;
-	this->settings.antialiasingLevel = ANTIALIASING;
+	//this->videoMode.width = WINWIDTH;
+	//this->videoMode.height = WINHEIGHT;
+	//this->settings.antialiasingLevel = ANTIALIASING;
 
 	this->rect.setPosition({ 0.f, 0.f });
 	this->rect.setSize({ 740.f, 30.f });
@@ -13,14 +13,14 @@ void SessionApp::InitVariables()
 	this->testText.setFillColor(sf::Color::Black);
 	this->testText.setCharacterSize(16);
 
-	this->sessionView.reset(sf::FloatRect(0, 0, 740.f, 560.f));
-	this->sessionView.setViewport(sf::FloatRect(0.2, 0.3035, 1.0f, 1.0f));
+	//this->sessionView.reset(sf::FloatRect(0, 0, 740.f, 560.f));
+	//this->sessionView.setViewport(sf::FloatRect(0.2, 0.3035, 1.0f, 1.0f));
 }
 
 void SessionApp::InitWindow()
 {
-	this->window = new sf::RenderWindow(this->videoMode, "SESSION TRACKER", sf::Style::Titlebar | sf::Style::Close, this->settings);
-	this->window->setFramerateLimit(FPS);
+	//this->window = new sf::RenderWindow(this->videoMode, "SESSION TRACKER", sf::Style::Titlebar | sf::Style::Close, this->settings);
+	//this->window->setFramerateLimit(FPS);
 	this->winSize = this->window->getSize();
 	this->winSizeF = static_cast<sf::Vector2f>(this->winSize);
 }
@@ -90,33 +90,33 @@ SessionApp::SessionApp()
 
 SessionApp::~SessionApp()
 {
-	delete this->window;
+	//delete this->window;
 	delete this->addSessionBtn;
 }
 
-const bool SessionApp::isRunning() const
-{
-	return this->window->isOpen();;
-}
+//const bool SessionApp::isRunning() const
+//{
+//	return this->window->isOpen();;
+//}
 
-void SessionApp::PollEvents()
-{
-	while (this->window->pollEvent(this->event))
-	{
-		switch (event.type)
-		{
-			case sf::Event::Closed:
-				this->window->close();
-				break;
-			case sf::Event::KeyPressed:
-				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-					this->window->close();
-				break;
-		}
-		this->inputSession->InputEvent(*this->window, this->event, this->inputHide, this->btnHide, inputTexts, this->addSessionTab);
-	}
-	this->addSessionBtn->BtnEvents(*this->window, this->event, this->addRect, this->btnHide);
-}
+//void SessionApp::PollEvents()
+//{
+//	while (this->window->pollEvent(this->event))
+//	{
+//		switch (event.type)
+//		{
+//			case sf::Event::Closed:
+//				this->window->close();
+//				break;
+//			case sf::Event::KeyPressed:
+//				if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+//					this->window->close();
+//				break;
+//		}
+//		this->inputSession->InputEvent(*this->window, this->event, this->inputHide, this->btnHide, inputTexts, this->addSessionTab);
+//	}
+//	this->addSessionBtn->BtnEvents(*this->window, this->event, this->addRect, this->btnHide);
+//}
 
 void SessionApp::LogoUITextUpdate()
 {
@@ -127,6 +127,7 @@ void SessionApp::LogoUITextUpdate()
 	this->uiText.setPosition({winSizeF.x/2-textBounds.width/2, 20.f});
 	this->allUIText.push_back(this->uiText);
 }
+
 
 void SessionApp::UITextUpdate()
 {
@@ -144,31 +145,31 @@ void SessionApp::Update()
 
 }
 
-void SessionApp::Render()
+void SessionApp::Render(sf::RenderWindow& window)
 {
-	this->window->clear(sf::Color(BACKGROUNDC));
+	/*window.clear(sf::Color(BACKGROUNDC));*/
 
 	
-	this->window->setView(this->window->getDefaultView());
-	this->window->draw(this->background);
-	if (!btnHide)
-	{
-		this->addSessionBtn->DrawTo(*this->window);
-	}
-	if (!inputHide)
-	{
-		this->inputSession->DrawTo(*this->window);
-	}
+	//window->setView(window->getDefaultView());
+	//window->draw(this->background);
+	//if (!btnHide)
+	//{
+	//	this->addSessionBtn->DrawTo(*this->window);
+	//}
+	//if (!inputHide)
+	//{
+	//	this->inputSession->DrawTo(*this->window);
+	//}
 
-	this->window->setView(this->sessionView);
-	for (auto& rect : rects)
-	{
-		this->window->draw(rect);
-	}
-	for (auto& text : textVec)
-	{
-		this->window->draw(text);
-	}
-	
-	this->window->display();
+	//this->window->setView(this->sessionView);
+	//for (auto& rect : rects)
+	//{
+	//	this->window->draw(rect);
+	//}
+	//for (auto& text : textVec)
+	//{
+	//	this->window->draw(text);
+	//}
+	//
+	//this->window->display();
 }
