@@ -28,7 +28,6 @@
 #define START_BTN_COLOR 24, 171, 14
 #define STOP_BTN_COLOR 247, 12, 55
 
-
 class Record
 {
 	public:
@@ -53,7 +52,7 @@ class Record
 		bool date_bar;
 
 		// CONSTRUCTORS 
-		Record() {}
+		Record();
 		Record(sf::Font& f, bool is_date = 0);
 		void Set_Text(std::vector<std::string> data);
 		void Set_Text(std::string data);
@@ -67,7 +66,6 @@ class Comparator_Func
 {
 	public:
 		bool operator()(const std::string& first, const std::string& second) const;
-
 };
 
 class Session
@@ -132,6 +130,7 @@ class Session
 		std::function<void()> Btn_Trigger;
 		std::function<void()> Home_Btn_Trigger;
 
+		Session();
 		Session(sf::RenderWindow& window, std::string name);
 
 		void Init_Variables();
@@ -164,10 +163,16 @@ class Session
 		void Draw_To_View(sf::RenderWindow& window);
 		void Draw_To_Main_Window(sf::RenderWindow& window);
 
+		void Run_Functions(std::string name);
+
 };
 
 // DATABASE HELPER FUNCTION
 std::vector<std::string> string_to_2dVec_parser(char* row);
-static int callback(void*, int, char**, char**);
-static int select_data(const char* s);
-static int insert_data(const char* s);
+
+namespace session_detail
+{
+	static int callback(void*, int, char**, char**);
+	static int insert_data(const char* s);
+	static int select_data(const char* s, std::string selected_data);
+}

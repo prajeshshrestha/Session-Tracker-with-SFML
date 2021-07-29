@@ -1,5 +1,9 @@
 #include "Session.h"
 
+Record::Record()
+{
+}
+
 Record::Record(sf::Font& f, bool is_date)
 {
 	this->font = f;
@@ -81,6 +85,12 @@ void Record::Draw_To(sf::RenderWindow& window)
 
 std::vector<std::vector<std::string>> result_vec;
 std::vector<std::vector<std::string>> new_data_added_vec;
+std::string db_search_index;
+
+Session::Session()
+{
+
+}
 
 // Session Members
 Session::Session(sf::RenderWindow& window, std::string name)
@@ -90,14 +100,27 @@ Session::Session(sf::RenderWindow& window, std::string name)
 	win_sizeF = static_cast<sf::Vector2f>(win_size);
 	win_center = sf::Vector2f({ win_sizeF.x / 2, win_sizeF.y / 2 });
 	session_name = name;
+	db_search_index = 1;
 	Load_Tex_Font();
+	Today_Date();
+	Init_Variables();
+	Run_Functions(name);
+}
+
+void Session::Run_Functions(std::string name)
+{
+	session_name = name;
+	db_search_index = name;
+	result_vec.clear();
+	new_data_added_vec.clear();
+	data_to_map.clear();
+	records_table.clear();
+	std::cout << "In run functions" << std::endl;
 	load_session_name();
 	Init_UI_Components();
 	Load_Clock_Components();
-	Today_Date();
-	Init_Variables();
+
 	Get_DB_Data();
-	
 	time_data = { "", "" };
 }
 
@@ -206,6 +229,7 @@ void Session::Init_Variables()
 	Home_Btn_Trigger = [&]()
 	{
 		home_btn_clicked = true;
+		Update_DB_Data();
 	};
 
 	show_scroll_bar = false;
@@ -235,7 +259,6 @@ void Session::Load_Tex_Font()
 	bg_image.setPosition({ 0.f, 0.f });
 	bg_stop_image.setPosition({ 0.f, -200.f });
 }
-
 
 void Session::load_session_name()
 {
@@ -313,7 +336,7 @@ void Session::Create_Home_Btn()
 void Session::Get_DB_Data()
 {
 	std::vector<std::vector<std::string>> date_vec;
-	select_data(dir);
+	session_detail::select_data(dir, session_name);
 	date_vec = result_vec;
 
 	std::vector<std::string> vec_data;
@@ -329,7 +352,7 @@ void Session::Update_DB_Data()
 {
 	if (!new_data_added_vec.empty())
 	{
-		insert_data(dir);
+		session_detail::insert_data(dir);
 	}
 }
 
@@ -489,7 +512,6 @@ void Session::View_Scroll_Event(sf::Event& event, sf::View& scroll_view)
 	}
 }
 
-
 void Session::Draw_To_View(sf::RenderWindow& window)
 {
 	if (show_scroll_bar)
@@ -523,7 +545,6 @@ void Session::Draw_To_Main_Window(sf::RenderWindow& window)
 	home_btn->DrawTo(window);
 }
 
-
 bool Comparator_Func::operator()(const std::string& first, const std::string& second) const
 {
 	std::vector<int> date_first = Convert_Date_To_Vec(first);
@@ -531,9 +552,8 @@ bool Comparator_Func::operator()(const std::string& first, const std::string& se
 	return date_first[2] > date_second[2] or date_first[1] > date_second[1] or date_first[0] > date_second[0];
 }
 
-std::map<std::string, int> month_map =
-{
-	{"Jan", 1},
+std::map<std::string, int> month_map ={
+	{ "Jan", 1},
 	{ "Feb", 2 },
 	{ "Mar", 3 },
 	{ "Apr", 4 },
@@ -561,8 +581,6 @@ std::vector<int> Convert_Date_To_Vec(std::string date_string)
 	};
 }
 
-
-
 std::vector<std::string> string_to_2dVec_parser(char* row)
 {
 	std::vector<std::string> result;
@@ -585,22 +603,22 @@ std::vector<std::string> string_to_2dVec_parser(char* row)
 	return result;
 }
 
-static int callback(void* NotUsed, int argc, char** argv, char** azColName)
+static int session_detail::callback(void* NotUsed, int argc, char** argv, char** azColName)
 {
 	result_vec.push_back(string_to_2dVec_parser(argv[1]));
 	return 0;
 }
 
-static int select_data(const char* s)
+static int session_detail::select_data(const char* s, std::string selected_data = "")
 {
 	sqlite3* DB;
 	char* messageError;
 
-	std::string sql = "SELECT * FROM SESSION_LIST;";
+	std::string sql = "SELECT * FROM SESSION_LIST WHERE session_id_name = '" + selected_data + "';";
 
 	int exit = sqlite3_open(s, &DB);
 	/* An open database, SQL to be evaluated, Callback function, 1st argument to callback, Error msg written here*/
-	exit = sqlite3_exec(DB, sql.c_str(), callback, NULL, &messageError);
+	exit = sqlite3_exec(DB, sql.c_str(), session_detail::callback, NULL, &messageError);
 
 	if (exit != SQLITE_OK) {
 		std::cerr << "Error in selectData function." << std::endl;
@@ -612,7 +630,7 @@ static int select_data(const char* s)
 	return 0;
 }
 
-static int insert_data(const char* s)
+static int session_detail::insert_data(const char* s)
 {
 	sqlite3* DB;
 	char* messageError;
@@ -624,12 +642,12 @@ static int insert_data(const char* s)
 		std::string tester = "";
 		for (size_t i = 0; i < new_data_added_vec.size(); ++i)
 		{
-			tester += "('" + new_data_added_vec[i][0] + "_" + new_data_added_vec[i][1] + "_" + new_data_added_vec[i][2] + "'),";
+			tester += "('" + new_data_added_vec[i][0] + "_" + new_data_added_vec[i][1] + "_" + new_data_added_vec[i][2] +"','" + db_search_index + "'),";
 		}
 		tester.erase(tester.size() - 1, 1);
+		std::cout << tester << std::endl;
 
-
-		sql = "INSERT INTO SESSION_LIST (session_detail) VALUES" + tester + ";";
+		sql = "INSERT INTO SESSION_LIST (session_detail, session_id_name) VALUES" + tester + ";";
 		exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
 		if (exit != SQLITE_OK) {
 			std::cerr << "Error in insertData function." << std::endl;

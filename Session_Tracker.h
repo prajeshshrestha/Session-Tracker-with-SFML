@@ -6,11 +6,52 @@
 #include <vector>
 #include <ctime>
 #include <functional>
+#include "Session.h"
+#include "sqlite3.h"
+
+#define CIRCLE_RR 15.f;
 
 class Session_Tab
 {
-public:
+	public:
+		// CONSTRUCTORS AND DESTRUCTORS;
+		Session_Tab();
+		Session_Tab(std::string name, sf::Vector2f pos, sf::Vector2f size, sf::Font& font);
+		~Session_Tab();
 
+		// UI COMPONENTS
+		Btn* session_btn;
+		sf::Font roboto_font;
+
+		float rect_w, rect_h;
+		float circle_radius;
+		sf::Vector2f rect_pos;
+		sf::Vector2f rect_size;
+		sf::Vector2f circle_origin;
+
+		sf::Color background_color;
+		sf::RectangleShape main_rect;
+		sf::RectangleShape up_rect;
+		sf::RectangleShape left_rect;
+		sf::RectangleShape right_rect;
+		sf::RectangleShape bottom_rect;
+		sf::CircleShape c_top_left;
+		sf::CircleShape c_top_right;
+		sf::CircleShape c_bottom_left;
+		sf::CircleShape c_bottom_right;
+		std::string session_name;
+
+		// ACCESSORS
+		sf::Vector2f main_rect_pos;
+		sf::Vector2f main_rect_size;
+
+		// HELPER FUNCTION
+		void Set_Components();
+		void Set_Dimension();
+		void Set_Button();
+
+		// UPDATE AND RENDER
+		void Draw_To(sf::RenderWindow& window);
 };
 
 
@@ -29,11 +70,21 @@ class Session_Tracker
 		// BUTTONS and INPUTFIELD
 		Btn* add_session_btn;
 		InputField* input_session_field;
+		std::function<void()> btn_event_func;
+		std::vector<std::function<void()>> all_btn_event_func;
 
 		// COMPONENTS CONTAINER
 		std::vector<sf::RectangleShape> rects;
 		std::vector<sf::Text> text_vec;
 		std::vector<std::string> input_texts;
+
+		std::vector<Session_Tab> session_tab_vec;
+		std::vector<std::vector<Session_Tab>> session_tab_container;
+		Session_Tab session_tab;
+
+		// SESSION TAB HELPERS
+		sf::Vector2f initial_pos;
+		sf::Vector2f session_tab_size;
 
 		// UI TYPOGRAPHY
 		sf::Font kaushan_font;
@@ -58,15 +109,34 @@ class Session_Tracker
 		void Init_UI_Font();
 		void Init_UI_Components();
 		void Update_Rects();
+		void Update_Rects_After_DB();
 
 		bool enter_pressed;
-
+		bool btn_show;
 
 		// EVENTS
-		void Run_InputField_Event(sf::RenderWindow& window, sf::Event& event);
+		void Run_InputField_Event(sf::RenderWindow& window, sf::Event& event, sf::View& view);
 		void Run_Btn_Event(sf::RenderWindow& window, sf::Event& event);
 
 		void Render_In_Main_Window(sf::RenderWindow& window);
 		void Render_In_View(sf::RenderWindow& window);
+
+
+		// SESSION
+		Session* session;
+		bool show_session;
+		bool show_session_tab;
+		std::vector<std::string> new_added_session;
+		void Get_DB_Data();
+		void Update_DB_Data();
+		const char* dir;
+		std::string selected_session_name;
 };
+
+namespace session_tracker
+{
+	static int callback(void*, int, char**, char**);
+	static int select_data(const char*);
+	static int insert_data(const char*);
+}
 
