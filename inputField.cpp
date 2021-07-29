@@ -258,8 +258,6 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event,
 	
 }
 
-
-
 void InputField::DrawTo(sf::RenderWindow& window)
 {
 	window.draw(Cleft);

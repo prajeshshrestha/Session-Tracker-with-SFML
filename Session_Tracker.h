@@ -9,7 +9,8 @@
 #include "Session.h"
 #include "sqlite3.h"
 
-#define CIRCLE_RR 15.f;
+#define BORDER_RADIUS 15.f;
+#define BLUE_THEMED_C 23, 137, 252
 
 class Session_Tab
 {
@@ -23,12 +24,14 @@ class Session_Tab
 		Btn* session_btn;
 		sf::Font roboto_font;
 
+		// DIMENSION COMPONENTS
 		float rect_w, rect_h;
 		float circle_radius;
 		sf::Vector2f rect_pos;
 		sf::Vector2f rect_size;
 		sf::Vector2f circle_origin;
 
+		// UI DESIGN COMPONENTS
 		sf::Color background_color;
 		sf::RectangleShape main_rect;
 		sf::RectangleShape up_rect;
@@ -39,11 +42,11 @@ class Session_Tab
 		sf::CircleShape c_top_right;
 		sf::CircleShape c_bottom_left;
 		sf::CircleShape c_bottom_right;
-		std::string session_name;
 
 		// ACCESSORS
 		sf::Vector2f main_rect_pos;
 		sf::Vector2f main_rect_size;
+		std::string session_name;
 
 		// HELPER FUNCTION
 		void Set_Components();
@@ -53,7 +56,6 @@ class Session_Tab
 		// UPDATE AND RENDER
 		void Draw_To(sf::RenderWindow& window);
 };
-
 
 class Session_Tracker
 {
@@ -67,60 +69,57 @@ class Session_Tracker
 		sf::Sprite background;
 		sf::RectangleShape rect;
 
-		// BUTTONS and INPUTFIELD
+		// BUTTONS and INPUTFIELD and RELATED EVENTS
 		Btn* add_session_btn;
 		InputField* input_session_field;
 		std::function<void()> btn_event_func;
-		std::vector<std::function<void()>> all_btn_event_func;
 
 		// COMPONENTS CONTAINER
 		std::vector<sf::RectangleShape> rects;
 		std::vector<sf::Text> text_vec;
 		std::vector<std::string> input_texts;
 
-		std::vector<Session_Tab> session_tab_vec;
-		std::vector<std::vector<Session_Tab>> session_tab_container;
+		// SESSION VIEW COMPONENTS
 		Session_Tab session_tab;
+		std::vector<Session_Tab> session_tab_vec;
 
-		// SESSION TAB HELPERS
+		// SESSION TAB COMPONENT DIMENSION AND POSITION
 		sf::Vector2f initial_pos;
 		sf::Vector2f session_tab_size;
 
 		// UI TYPOGRAPHY
 		sf::Font kaushan_font;
 		sf::Font roboto_font;
-		sf::Text ui_text;
 		sf::Text test_text;
-		std::vector<sf::Text> al_UI_text;
 
 		// DATA ACCESSORS
 		sf::Vector2u win_size;
 		sf::Vector2f win_sizeF;
 
 		// BOOLEAN DATA COMPONENTS AND METHODS
-		std::function<void()> add_rect;
-		std::function<void()> add_session_tab;
 		bool btn_hide;
 		bool input_hide;
+		bool enter_pressed;
+		bool btn_show;
 
-		// INITIALIZERS
+		// CUSTOM FUNCTIONS 
+		std::function<void()> add_rect;
+		std::function<void()> add_session_tab;
+
+		// INITIALIZERS and UPDATERS
 		void Init_Variables();
 		void Init_Background();
 		void Init_UI_Font();
 		void Init_UI_Components();
 		void Update_Rects();
 		void Update_Rects_After_DB();
-
-		bool enter_pressed;
-		bool btn_show;
+		void Alter_Session_Tab_View();
 
 		// EVENTS
-		void Run_InputField_Event(sf::RenderWindow& window, sf::Event& event, sf::View& view);
-		void Run_Btn_Event(sf::RenderWindow& window, sf::Event& event);
-
+		void Run_Inside_Event(sf::RenderWindow& window, sf::Event& event, sf::View& view);
+		void Run_Outside_Event(sf::RenderWindow& window, sf::Event& event);
 		void Render_In_Main_Window(sf::RenderWindow& window);
 		void Render_In_View(sf::RenderWindow& window);
-
 
 		// SESSION
 		Session* session;
@@ -133,10 +132,10 @@ class Session_Tracker
 		std::string selected_session_name;
 };
 
+// DATABASE RELATED
 namespace session_tracker
 {
 	static int callback(void*, int, char**, char**);
 	static int select_data(const char*);
 	static int insert_data(const char*);
 }
-
