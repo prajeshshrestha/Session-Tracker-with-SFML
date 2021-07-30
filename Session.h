@@ -60,8 +60,11 @@ class Record
 		void Draw_To(sf::RenderWindow& window);
 };
 
+// Date in string to vector of integer converter
 std::vector<int> Convert_Date_To_Vec(std::string date_string);
 
+// A comparator class supplied to the map 
+// to sort the map according to the key i.e. date
 class Comparator_Func
 {
 	public:
@@ -71,7 +74,7 @@ class Comparator_Func
 class Session
 {
 	public:
-		// Window Property
+		// WINDOW PROPERTIES
 		sf::RenderWindow window;
 		sf::Vector2u win_size;
 		sf::Vector2f win_sizeF;
@@ -130,11 +133,14 @@ class Session
 		std::function<void()> Btn_Trigger;
 		std::function<void()> Home_Btn_Trigger;
 
+		// CONSTRUCTORS
 		Session();
 		Session(sf::RenderWindow& window, std::string name);
 
+		// INITIALITERS and LOADERS
 		void Init_Variables();
 		void Load_Tex_Font();
+		void Set_Bg_Images_Pos();
 		void load_session_name();
 		void Init_UI_Components();
 		void Create_Toggle_Btn();
@@ -143,8 +149,9 @@ class Session
 		void Create_Home_Btn();
 		void Get_DB_Data();
 		void Update_DB_Data();
+		void Run_Functions(std::string name);
 
-		// HELPS COMPONENTS FOR DB
+		// HELPER COMPONENTS FOR DB
 		std::map<std::string, std::vector<std::vector<std::string>>, Comparator_Func> data_to_map;
 		std::map<std::string, std::vector<std::vector<std::string>>>::iterator it;
 		std::vector<std::vector<std::string>> added_vectors;
@@ -153,17 +160,16 @@ class Session
 		// PARSER FUNCTIONS
 		void Map_To_Records_Vec();
 		std::string Timer_Duration(std::vector<int> start, std::vector<int> end);
+		std::vector<int> Convert_Data(std::string data_time);
 
 		// RUNNING EVENTS
-		void Run_Events(sf::RenderWindow& window, sf::Event& event, bool& show_session, bool& show_button);
+		void Run_Events(sf::RenderWindow& window, sf::Event& event, bool& show_session, bool& show_button, bool& update_total_time_list);
 		void Timer_Run_Event();
 		void View_Scroll_Event(sf::Event& event, sf::View& scroll_view);
 
-		// RENDER
+		// RENDERER
 		void Draw_To_View(sf::RenderWindow& window);
 		void Draw_To_Main_Window(sf::RenderWindow& window);
-
-		void Run_Functions(std::string name);
 
 };
 
@@ -173,6 +179,6 @@ std::vector<std::string> string_to_2dVec_parser(char* row);
 namespace session_detail
 {
 	static int callback(void*, int, char**, char**);
-	static int insert_data(const char* s);
+	static int insert_data(const char* s, std::string total_time);
 	static int select_data(const char* s, std::string selected_data);
 }

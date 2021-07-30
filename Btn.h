@@ -35,7 +35,6 @@ class Btn
 		bool mouseInside = false;
 		bool mouseHeld = false;
 
-
 		// Constructors and Destructor
 		Btn() {}
 		Btn(std::string BtnText, sf::Vector2f btnPos,uint8_t charSize, sf::Font& font);
@@ -51,7 +50,6 @@ class Btn
 		void BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<void()> func);
 		void BtnEvents(sf::RenderWindow& window, sf::Event& event, std::function<void()> func, std::string name, std::string& selected_session_name);
 		void BtnEvents(sf::RenderWindow& window, sf::Event& event, bool& btn_show);
-
 		void DrawTo(sf::RenderWindow &window);
 };
 

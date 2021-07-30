@@ -5,6 +5,7 @@
 /// new_input_texts -> tracks new session added to the view
 /// </summary>
 std::vector<std::string> db_session_list_data;
+std::vector<std::string> db_total_time_list;
 std::vector<std::string> new_input_texts;
 
 /// <summary>
@@ -90,7 +91,7 @@ void Session_Tracker::Alter_Session_Tab_View()
 				this->initial_pos.x += 248.f;
 			}
 		}
-		this->session_tab = Session_Tab(this->input_texts[i], this->initial_pos, this->session_tab_size, this->roboto_font);
+		this->session_tab = Session_Tab(this->input_texts[i], this->initial_pos, this->session_tab_size, roboto_font);
 		this->session_tab_vec.push_back(Session_Tab(session_tab));
 	}
 }
@@ -102,7 +103,18 @@ void Session_Tracker::Get_DB_Data()
 {
 	session_tracker::select_data(dir);
 	this->input_texts = db_session_list_data;
+	std::cout << db_session_list_data.size() << std::endl;
+	for (auto str : db_session_list_data)
+	{
+		session_tracker::fetch_total_time_list(dir, str);
+	}
 	this->Update_Rects_After_DB();
+	std::cout << session_tab_vec.size() << std::endl;
+	std::cout << db_total_time_list.size() << std::endl;
+	//for (size_t i = 0; i < session_tab_vec.size(); ++i)
+	//{
+	//	session_tab_vec[i].Set_Total_Time_Text(db_total_time_list[i]);
+	//}
 }
 
 /// <summary>
@@ -113,6 +125,20 @@ void Session_Tracker::Update_DB_Data()
 	if (!new_input_texts.empty())
 	{
 		session_tracker::insert_data(dir);
+	}
+}
+
+void Session_Tracker::Set_DB_Data_To_View()
+{
+	db_total_time_list.clear();
+	for (auto str : db_session_list_data)
+	{
+		session_tracker::fetch_total_time_list(dir, str);
+	}
+	
+	for (size_t i = 0; i < session_tab_vec.size(); ++i)
+	{
+		session_tab_vec[i].Set_Total_Time_Text(db_total_time_list[i]);
 	}
 }
 
@@ -132,7 +158,7 @@ void Session_Tracker::Init_Variables()
 	this->show_session = false;
 	this->show_session_tab = true;
 	this->dir = "C:\\Users\\Progosta\\Desktop\\Tori Laure\\Session Tracker\\Session Tracker\\Session.db";
-
+	this->update_total_time_list = false;
 	this->btn_event_func = [&]()
 	{
 		this->show_session = true;
@@ -236,6 +262,7 @@ void Session_Tracker::Update_Rects()
 			session_tab = Session_Tab(input_texts.back(), initial_pos, session_tab_size, roboto_font);
 			session_tab_vec.push_back(Session_Tab(session_tab));
 			new_input_texts.push_back(input_texts.back());
+			//db_session_list_data.push_back(input_texts.back());
 		}
 	}
 	else
@@ -269,12 +296,12 @@ void Session_Tracker::Render_In_Main_Window(sf::RenderWindow& window)
 			}
 		}
 	}
-
 	if (show_session)
 	{
 		session->Draw_To_Main_Window(window);
 	}
 }
+
 
 /// <summary>
 /// Events to be handeled inside the poll event loop
@@ -328,7 +355,12 @@ void Session_Tracker::Run_Outside_Event(sf::RenderWindow& window, sf::Event& eve
 	}
 	if (show_session)
 	{
-		session->Run_Events(window, event, show_session, show_session_tab);
+		session->Run_Events(window, event, show_session, show_session_tab, update_total_time_list);
+	}
+	if (update_total_time_list)
+	{
+		update_total_time_list = false;
+		Set_DB_Data_To_View();
 	}
 }
 
@@ -352,6 +384,7 @@ Session_Tab::Session_Tab(std::string name, sf::Vector2f pos, sf::Vector2f size, 
 	rect_pos = pos;
 	rect_size = size;
 	roboto_font = font;
+	total_time_info.setFont(font);
 	Set_Components();
 	Set_Dimension();
 	Set_Button();
@@ -371,6 +404,9 @@ void Session_Tab::Set_Components()
 {
 	circle_radius = BORDER_RADIUS;
 	background_color = sf::Color(BLUE_THEMED_C);
+	total_time_info.setCharacterSize(14);
+	total_time_info.setString("00:00:0.00");
+	total_time_info.setOrigin({ total_time_info.getGlobalBounds().width / 2, 0.f });
 }
 
 /// <summary>
@@ -426,6 +462,8 @@ void Session_Tab::Set_Dimension()
 	right_rect.setFillColor(background_color);
 	bottom_rect.setFillColor(background_color);
 	main_rect.setFillColor(background_color);
+
+	total_time_info.setPosition({ main_rect_pos.x, main_rect_pos.y+20.f});
 }
 
 /// <summary>
@@ -436,10 +474,6 @@ void Session_Tab::Set_Button()
 	session_btn = new Btn(session_name, {main_rect_pos.x, main_rect_pos.y - 20.f}, 15, roboto_font);
 }
 
-/// <summary>
-/// Render all the UI components of the sesion_tab
-/// </summary>
-/// <param name="window">Window to render to</param>
 void Session_Tab::Draw_To(sf::RenderWindow& window)
 {
 	window.draw(main_rect);
@@ -447,13 +481,41 @@ void Session_Tab::Draw_To(sf::RenderWindow& window)
 	window.draw(c_top_right);
 	window.draw(c_bottom_left);
 	window.draw(c_bottom_right);
-
 	window.draw(up_rect);
 	window.draw(left_rect);
 	window.draw(right_rect);
 	window.draw(bottom_rect);
+	window.draw(total_time_info);
 	session_btn->DrawTo(window);
 }
+
+void Session_Tab::Set_Total_Time_Text(std::string total_time_string)
+{
+	total_time_info.setString(total_time_string);
+}
+
+
+
+
+/// <summary>
+/// Render all the UI components of the sesion_tab
+/// </summary>
+/// <param name="window">Window to render to</param>
+//void Session_Tab::Draw_To(sf::RenderWindow& window)
+//{
+//	window.draw(main_rect);
+//	window.draw(c_top_left);
+//	window.draw(c_top_right);
+//	window.draw(c_bottom_left);
+//	window.draw(c_bottom_right);
+//
+//	window.draw(up_rect);
+//	window.draw(left_rect);
+//	window.draw(right_rect);
+//	window.draw(bottom_rect);
+//	session_btn->DrawTo(window);
+//	window.draw(total_time_info);
+//}
 
 /// <summary>
 /// Callback function to set every row data from the database
@@ -519,5 +581,27 @@ static int session_tracker::insert_data(const char* s)
 		else
 			std::cout << "Records inserted Successfully!" << std::endl;
 	}
+	return 0;
+}
+
+int session_tracker::fetch_total_time_list(const char* s, std::string session_name)
+{
+	sqlite3* DB;
+	char* messageError;
+	std::string sql = "SELECT total_time FROM SESSION_LIST where session_id_name = '" + session_name + "' ORDER BY id DESC LIMIT 1;";
+	int exit = sqlite3_open(s, &DB);
+	exit = sqlite3_exec(DB, sql.c_str(), session_tracker::call_back_total_time_list, NULL, &messageError);
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error in selectData function." << std::endl;
+		sqlite3_free(messageError);
+	}
+	else
+		std::cout << "Records selected Successfully!" << std::endl;
+	return 0;
+}
+
+int session_tracker::call_back_total_time_list(void* NotUsed, int argc, char** argv, char** azColName)
+{
+	db_total_time_list.push_back(argv[0]);
 	return 0;
 }

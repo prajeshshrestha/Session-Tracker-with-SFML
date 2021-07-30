@@ -38,13 +38,5 @@ int main()
 		window.display();
 	}
 	session_app.Update_DB_Data();
-
-
-	//SessionApp App;
-	//while (App.isRunning())
-	//{
-	//	App.Update();
-	//	App.Render();
-	//}
 	return EXIT_SUCCESS;
 }

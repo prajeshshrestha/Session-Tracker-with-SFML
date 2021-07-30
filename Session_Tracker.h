@@ -42,6 +42,7 @@ class Session_Tab
 		sf::CircleShape c_top_right;
 		sf::CircleShape c_bottom_left;
 		sf::CircleShape c_bottom_right;
+		sf::Text total_time_info;
 
 		// ACCESSORS
 		sf::Vector2f main_rect_pos;
@@ -55,6 +56,7 @@ class Session_Tab
 
 		// UPDATE AND RENDER
 		void Draw_To(sf::RenderWindow& window);
+		void Set_Total_Time_Text(std::string);
 };
 
 class Session_Tracker
@@ -101,6 +103,7 @@ class Session_Tracker
 		bool input_hide;
 		bool enter_pressed;
 		bool btn_show;
+		bool update_total_time_list;
 
 		// CUSTOM FUNCTIONS 
 		std::function<void()> add_rect;
@@ -130,6 +133,8 @@ class Session_Tracker
 		void Update_DB_Data();
 		const char* dir;
 		std::string selected_session_name;
+
+		void Set_DB_Data_To_View();
 };
 
 // DATABASE RELATED
@@ -138,4 +143,6 @@ namespace session_tracker
 	static int callback(void*, int, char**, char**);
 	static int select_data(const char*);
 	static int insert_data(const char*);
+	static int fetch_total_time_list(const char*, std::string);
+	static int call_back_total_time_list(void*, int, char**, char**);
 }

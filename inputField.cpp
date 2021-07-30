@@ -255,7 +255,6 @@ void InputField::InputEvent(sf::RenderWindow& window, sf::Event& event,
 			SetText(inputText);
 		}
 	}
-	
 }
 
 void InputField::DrawTo(sf::RenderWindow& window)
