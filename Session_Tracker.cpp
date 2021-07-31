@@ -5,8 +5,9 @@
 /// new_input_texts -> tracks new session added to the view
 /// </summary>
 std::vector<std::string> db_session_list_data;
-std::vector<std::string> db_total_time_list;
+std::vector<std::string> db_total_time_string;
 std::vector<std::string> new_input_texts;
+std::vector<std::vector<std::string>> db_total_time_list;
 
 /// <summary>
 /// Parameterized constructor for SESSION_TRACKER 
@@ -103,18 +104,13 @@ void Session_Tracker::Get_DB_Data()
 {
 	session_tracker::select_data(dir);
 	this->input_texts = db_session_list_data;
-	std::cout << db_session_list_data.size() << std::endl;
+
 	for (auto str : db_session_list_data)
 	{
 		session_tracker::fetch_total_time_list(dir, str);
 	}
 	this->Update_Rects_After_DB();
-	std::cout << session_tab_vec.size() << std::endl;
-	std::cout << db_total_time_list.size() << std::endl;
-	//for (size_t i = 0; i < session_tab_vec.size(); ++i)
-	//{
-	//	session_tab_vec[i].Set_Total_Time_Text(db_total_time_list[i]);
-	//}
+	this->Set_DB_Total_Time_List();
 }
 
 /// <summary>
@@ -128,19 +124,32 @@ void Session_Tracker::Update_DB_Data()
 	}
 }
 
+void Session_Tracker::Set_DB_Total_Time_List()
+{
+	for (size_t i = 0; i < session_tab_vec.size(); ++i)
+	{
+		for (size_t j = 0; j < db_total_time_list.size(); ++j)
+		{
+			if (session_tab_vec[i].session_btn->text.getString() == db_total_time_list[j][0])
+			{
+				session_tab_vec[i].Set_Total_Time_Text(db_total_time_list[j][1]);
+				break;
+			}
+		}
+	}
+}
+
 void Session_Tracker::Set_DB_Data_To_View()
 {
 	db_total_time_list.clear();
+
 	for (auto str : db_session_list_data)
 	{
 		session_tracker::fetch_total_time_list(dir, str);
 	}
-	
-	for (size_t i = 0; i < session_tab_vec.size(); ++i)
-	{
-		session_tab_vec[i].Set_Total_Time_Text(db_total_time_list[i]);
-	}
+	Set_DB_Total_Time_List();
 }
+
 
 /// <summary>
 /// Initializes required components of the app
@@ -164,6 +173,15 @@ void Session_Tracker::Init_Variables()
 		this->show_session = true;
 		this->show_session_tab = false;
 		this->session->Run_Functions(selected_session_name);
+	};
+	this->delete_event_func = [&]()
+	{
+		session_tracker::delete_session_tab(dir, selected_session_name);
+		db_session_list_data.clear();
+		db_total_time_list.clear();
+		db_total_time_string.clear();
+		session_tab_vec.clear();
+		Get_DB_Data();
 	};
 }
 
@@ -262,7 +280,7 @@ void Session_Tracker::Update_Rects()
 			session_tab = Session_Tab(input_texts.back(), initial_pos, session_tab_size, roboto_font);
 			session_tab_vec.push_back(Session_Tab(session_tab));
 			new_input_texts.push_back(input_texts.back());
-			//db_session_list_data.push_back(input_texts.back());
+			db_session_list_data.push_back(input_texts.back());
 		}
 	}
 	else
@@ -351,6 +369,7 @@ void Session_Tracker::Run_Outside_Event(sf::RenderWindow& window, sf::Event& eve
 		for (size_t i = 0; i < session_tab_vec.size(); ++i)
 		{
 			session_tab_vec[i].session_btn->BtnEvents(window, event, btn_event_func, input_texts[i], selected_session_name);
+			session_tab_vec[i].delete_btn->BtnEvents(window, event, delete_event_func, input_texts[i], selected_session_name);
 		}
 	}
 	if (show_session)
@@ -463,7 +482,7 @@ void Session_Tab::Set_Dimension()
 	bottom_rect.setFillColor(background_color);
 	main_rect.setFillColor(background_color);
 
-	total_time_info.setPosition({ main_rect_pos.x, main_rect_pos.y+20.f});
+	total_time_info.setPosition({ main_rect_pos.x-30.f, main_rect_pos.y+20.f});
 }
 
 /// <summary>
@@ -472,8 +491,15 @@ void Session_Tab::Set_Dimension()
 void Session_Tab::Set_Button()
 {
 	session_btn = new Btn(session_name, {main_rect_pos.x, main_rect_pos.y - 20.f}, 15, roboto_font);
+	delete_btn = new Btn("Delete", { main_rect_pos.x + 70.f, main_rect_pos.y + 28.f }, 10, roboto_font);
+	delete_btn->SetFillColor(sf::Color(209,265,42));
+	delete_btn->text.setFillColor(sf::Color::White);
 }
 
+/// <summary>
+/// Render all the UI components of the sesion_tab
+/// </summary>
+/// <param name="window">Window to render to</param>
 void Session_Tab::Draw_To(sf::RenderWindow& window)
 {
 	window.draw(main_rect);
@@ -487,35 +513,13 @@ void Session_Tab::Draw_To(sf::RenderWindow& window)
 	window.draw(bottom_rect);
 	window.draw(total_time_info);
 	session_btn->DrawTo(window);
+	delete_btn->DrawTo(window);
 }
 
 void Session_Tab::Set_Total_Time_Text(std::string total_time_string)
 {
 	total_time_info.setString(total_time_string);
 }
-
-
-
-
-/// <summary>
-/// Render all the UI components of the sesion_tab
-/// </summary>
-/// <param name="window">Window to render to</param>
-//void Session_Tab::Draw_To(sf::RenderWindow& window)
-//{
-//	window.draw(main_rect);
-//	window.draw(c_top_left);
-//	window.draw(c_top_right);
-//	window.draw(c_bottom_left);
-//	window.draw(c_bottom_right);
-//
-//	window.draw(up_rect);
-//	window.draw(left_rect);
-//	window.draw(right_rect);
-//	window.draw(bottom_rect);
-//	session_btn->DrawTo(window);
-//	window.draw(total_time_info);
-//}
 
 /// <summary>
 /// Callback function to set every row data from the database
@@ -590,7 +594,7 @@ int session_tracker::fetch_total_time_list(const char* s, std::string session_na
 	char* messageError;
 	std::string sql = "SELECT total_time FROM SESSION_LIST where session_id_name = '" + session_name + "' ORDER BY id DESC LIMIT 1;";
 	int exit = sqlite3_open(s, &DB);
-	exit = sqlite3_exec(DB, sql.c_str(), session_tracker::call_back_total_time_list, NULL, &messageError);
+	exit = sqlite3_exec(DB, sql.c_str(), session_tracker::call_back_total_time_list, &session_name, &messageError);
 	if (exit != SQLITE_OK) {
 		std::cerr << "Error in selectData function." << std::endl;
 		sqlite3_free(messageError);
@@ -600,8 +604,34 @@ int session_tracker::fetch_total_time_list(const char* s, std::string session_na
 	return 0;
 }
 
-int session_tracker::call_back_total_time_list(void* NotUsed, int argc, char** argv, char** azColName)
+int session_tracker::call_back_total_time_list(void* something, int argc, char** argv, char** azColName)
 {
-	db_total_time_list.push_back(argv[0]);
+	db_total_time_string.clear();
+	//std::string* name = reinterpret_cast<std::string*>(something);
+	//std::cout << *name << '\t' << argv[0] << std::endl;
+	db_total_time_string.push_back(*reinterpret_cast<std::string*>(something));
+	db_total_time_string.push_back(argv[0]);
+	db_total_time_list.push_back(db_total_time_string);
+	return 0;
+}
+
+int session_tracker::delete_session_tab(const char* s, std::string name)
+{
+	sqlite3* DB;
+	char* messageError;
+	std::cout << "Going to delete" + name << std::endl;
+	std::string sql = "DELETE FROM SESSION WHERE session_name = '" + name + "';"
+					  "DELETE FROM SESSION_LIST WHERE session_id_name = '" + name + "';";
+
+	int exit = sqlite3_open(s, &DB);
+	
+	exit = sqlite3_exec(DB, sql.c_str(), NULL, NULL, &messageError);
+	if (exit != SQLITE_OK) {
+		std::cerr << "Error in deleteData function." << std::endl;
+		sqlite3_free(messageError);
+	}
+	else
+		std::cout << "Records deleted Successfully!" << std::endl;
+
 	return 0;
 }

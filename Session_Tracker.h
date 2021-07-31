@@ -8,6 +8,7 @@
 #include <functional>
 #include "Session.h"
 #include "sqlite3.h"
+#include <string.h>
 
 #define BORDER_RADIUS 15.f;
 #define BLUE_THEMED_C 23, 137, 252
@@ -57,6 +58,8 @@ class Session_Tab
 		// UPDATE AND RENDER
 		void Draw_To(sf::RenderWindow& window);
 		void Set_Total_Time_Text(std::string);
+
+		Btn* delete_btn;
 };
 
 class Session_Tracker
@@ -75,6 +78,7 @@ class Session_Tracker
 		Btn* add_session_btn;
 		InputField* input_session_field;
 		std::function<void()> btn_event_func;
+		std::function<void()> delete_event_func;
 
 		// COMPONENTS CONTAINER
 		std::vector<sf::RectangleShape> rects;
@@ -135,6 +139,7 @@ class Session_Tracker
 		std::string selected_session_name;
 
 		void Set_DB_Data_To_View();
+		void Set_DB_Total_Time_List();
 };
 
 // DATABASE RELATED
@@ -145,4 +150,5 @@ namespace session_tracker
 	static int insert_data(const char*);
 	static int fetch_total_time_list(const char*, std::string);
 	static int call_back_total_time_list(void*, int, char**, char**);
+	static int delete_session_tab(const char*, std::string);
 }

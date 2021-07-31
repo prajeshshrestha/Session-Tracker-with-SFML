@@ -171,6 +171,8 @@ class Session
 		void Draw_To_View(sf::RenderWindow& window);
 		void Draw_To_Main_Window(sf::RenderWindow& window);
 
+		void Reset_Scroll_Bar_And_View(sf::View& view);
+		bool reset_view;
 };
 
 // DATABASE HELPER FUNCTION

@@ -1,2 +1,4 @@
 ﻿  Session_Tracker.cpp
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\Session_Tracker.cpp(495,48): warning C4305: 'argument': truncation from 'int' to 'sf::Uint8'
+C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\Session Tracker\Session_Tracker.cpp(495,41): warning C4309: 'argument': truncation of constant value
   Session Tracker.vcxproj -> C:\Users\Progosta\Desktop\Tori Laure\Session Tracker\x64\Debug\Session Tracker.exe

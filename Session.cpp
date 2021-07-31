@@ -140,6 +140,7 @@ void Session::Run_Functions(std::string name)
 {
 	this->session_name = name;
 	show_scroll_bar = false;
+	this->reset_view = true;
 	db_search_index = name;
 	result_vec.clear();
 	new_data_added_vec.clear();
@@ -321,7 +322,6 @@ void Session::Load_Clock_Components()
 	timer_text.setPosition({ win_sizeF.x - 150.f, 120.f });
 	timer_text.setCharacterSize(24);
 	
-
 	designate_time_text = sf::Text("HRS        MIN        SEC", roboto_font, 10);
 	designate_time_text.setFillColor(sf::Color::White);
 	designate_time_text.setPosition({ timer_text.getGlobalBounds().left + 8.f, 150.f });
@@ -505,7 +505,7 @@ void Session::Run_Events(sf::RenderWindow& window, sf::Event& event, bool& show_
 		show_session = false;
 		show_button = true;
 		home_btn_clicked = false;
-		//update_total_time_list = true;
+		update_total_time_list = true;
 	}
 }
 
@@ -569,8 +569,14 @@ void Session::Timer_Run_Event()
 /// <param name="scroll_view">View to display the RECORDS/SESSION_DETAIL to</param>
 void Session::View_Scroll_Event(sf::Event& event, sf::View& scroll_view)
 {
+	if (reset_view)
+	{
+		Reset_Scroll_Bar_And_View(scroll_view);
+		reset_view = false;
+	}
 	if (records_table.size() > 13)
 	{
+
 		show_scroll_bar = true;
 		scroll_bar.setSize({ 18.f, 207025 / ((records_table.size() + 1) * 35.f) });
 		float estimated_height = (records_table.size() - 12) * 35.f + 337.5;
@@ -597,6 +603,13 @@ void Session::View_Scroll_Event(sf::Event& event, sf::View& scroll_view)
 		}
 	}
 }
+
+void Session::Reset_Scroll_Bar_And_View(sf::View& scroll_view)
+{
+	scroll_view.reset(sf::FloatRect(0.f, 0.f, 760.f, 675.f));
+	scroll_bar.setPosition({ scroll_bar.getPosition().x, 0.f });
+}
+
 
 /// <summary>
 /// Render components in the view section
@@ -638,6 +651,8 @@ void Session::Draw_To_Main_Window(sf::RenderWindow& window)
 	toggle_btn->DrawTo(window);
 	home_btn->DrawTo(window);
 }
+
+
 
 /// <summary>
 /// The comparator class supplied to the map for sorting the w.r.t. the key
